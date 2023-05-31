@@ -6,6 +6,8 @@ from scipy import ndimage
 import shutil
 import sys
 import base64
+import zipfile
+from PIL import Image
 
 st.set_page_config(page_title='ミリモンペット書き出し', page_icon=":panda_face:")
 
@@ -20,7 +22,11 @@ st.write('パターン1：見た目の中心を取って配置します。')
 
 # パターン1のボタンクリックで処理実行
 if st.button('パターン1：ペット一括書き出し'):
-
+    # output1フォルダが存在する場合、そのフォルダを削除
+    if os.path.exists('output1'):
+        shutil.rmtree('output1')
+    os.makedirs('output1')
+    
     OUTPUT_PATH = os.getcwd()
     OUTPUT_PATH = os.path.join(OUTPUT_PATH, 'output1')
 
@@ -201,6 +207,7 @@ if st.button('パターン1：ペット一括書き出し'):
             src = os.path.join(OUTPUT_PATH, folder, file)
             dst = os.path.join(OUTPUT_PATH, folder, os.path.basename(export_file.name))
             os.rename(src, dst)
+    
             
     st.markdown(f'<span style="color:red">書き出しが完了しました。フォルダ「output1」確認してください。</span>', unsafe_allow_html=True)
     shutil.make_archive('output1', 'zip', 'output1')
@@ -218,6 +225,10 @@ st.write('パターン2：パターン１と同じく見た目の中心を取っ
 # パターン2のボタンクリックで処理実行
 if st.button('パターン2：ペット一括書き出し'):
     # ここにパターン2の処理
+    # output2フォルダが存在する場合、そのフォルダを削除
+    if os.path.exists('output2'):
+        shutil.rmtree('output2')
+    os.makedirs('output2')
     OUTPUT_PATH = os.getcwd()
     OUTPUT_PATH = os.path.join(OUTPUT_PATH, 'output2')
 
@@ -413,6 +424,10 @@ st.write('パターン3：四角のものや大きすぎるものの書き出し
 # パターン3のボタンクリックで処理実行
 if st.button('パターン3：ペット一括書き出し'):
     # ここにパターン3の処理
+    # output3フォルダが存在する場合、そのフォルダを削除
+    if os.path.exists('output3'):
+        shutil.rmtree('output3')
+    os.makedirs('output3')
 
     OUTPUT_PATH = os.getcwd()
     OUTPUT_PATH = os.path.join(OUTPUT_PATH, 'output3')
