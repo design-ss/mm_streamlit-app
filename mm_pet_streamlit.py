@@ -20,18 +20,15 @@ st.write('パターン1：見た目の中心を取って配置します。')
 
 # パターン1のボタンクリックで処理実行
 if st.button('パターン1：ペット一括書き出し'):
-    # ここに処理???
+    # ここに処理
     #hakahara: 230407 OUTPUT_PATH 取得を修正
-    if getattr(sys, 'frozen', False): 
-        OUTPUT_PATH = os.path.dirname(sys.executable) 
-        cut_index = OUTPUT_PATH.find(".app")
-        if sys.platform == 'darwin' and cut_index != -1: # mac の .app で実行した時
-            OUTPUT_PATH = OUTPUT_PATH[:(cut_index + 4)] # .app までの path にする
-            OUTPUT_PATH = os.path.dirname(OUTPUT_PATH) # .app の dir path にする
-    else:
-         #shimomatsuya: 230407 OUTPUT_PATH 取得を修正
-        OUTPUT_PATH = os.path.dirname(sys.argv[0])
+    # 現在の作業ディレクトリを取得
+    OUTPUT_PATH = os.getcwd()
+
+    # フォルダ名を追加
     OUTPUT_PATH = os.path.join(OUTPUT_PATH, 'output1')
+
+    # フォルダが存在しない場合は作成
     if not os.path.exists(OUTPUT_PATH):
         os.makedirs(OUTPUT_PATH)
 
