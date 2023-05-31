@@ -20,12 +20,8 @@ st.write('パターン1：見た目の中心を取って配置します。')
 
 # パターン1のボタンクリックで処理実行
 if st.button('パターン1：ペット一括書き出し'):
-    # ここに処理
-    #hakahara: 230407 OUTPUT_PATH 取得を修正
-    # 現在の作業ディレクトリを取得
-    OUTPUT_PATH = os.getcwd()
 
-    # フォルダ名を追加
+    OUTPUT_PATH = os.getcwd()
     OUTPUT_PATH = os.path.join(OUTPUT_PATH, 'output1')
 
     # フォルダが存在しない場合は作成
@@ -207,29 +203,12 @@ if st.button('パターン1：ペット一括書き出し'):
             os.rename(src, dst)
             
     st.markdown(f'<span style="color:red">書き出しが完了しました。フォルダ「output1」確認してください。</span>', unsafe_allow_html=True)
-     # zipファイルの名前
-    zip_name = f'{os.path.basename(OUTPUT_PATH)}.zip'
+    shutil.make_archive('output1', 'zip', 'output1')
+    st.download_button(label="output1.zipをダウンロード", data=open('output1.zip', 'rb'), file_name='output1.zip', mime='application/zip')
+    os.remove('output1.zip')
 
-    # フォルダをzip圧縮
-    shutil.make_archive(OUTPUT_PATH, 'zip', OUTPUT_PATH)
 
-    # zipファイルの内容を取得
-    with open(zip_name, 'rb') as f:
-        file_content = f.read()
 
-    # ファイルの内容をbase64エンコード
-    file_content_encoded = base64.b64encode(file_content).decode()
-
-    # ダウンロードボタンを作成
-    st.download_button(
-        label=f'Download {zip_name}',
-        data=file_content_encoded,
-        file_name=zip_name,
-        mime='application/zip'
-    )
-
-    # zipファイルを削除
-    os.remove(zip_name)
     
 st.markdown('<br>', unsafe_allow_html=True)
 
@@ -238,19 +217,11 @@ st.write('パターン2：パターン１と同じく見た目の中心を取っ
 
 # パターン2のボタンクリックで処理実行
 if st.button('パターン2：ペット一括書き出し'):
-    # ここにパターン2の処理（省略）
-    # ここに処理???
-    #hakahara: 230407 OUTPUT_PATH 取得を修正
-    if getattr(sys, 'frozen', False): 
-        OUTPUT_PATH = os.path.dirname(sys.executable) 
-        cut_index = OUTPUT_PATH.find(".app")
-        if sys.platform == 'darwin' and cut_index != -1: # mac の .app で実行した時
-            OUTPUT_PATH = OUTPUT_PATH[:(cut_index + 4)] # .app までの path にする
-            OUTPUT_PATH = os.path.dirname(OUTPUT_PATH) # .app の dir path にする
-    else:
-         #shimomatsuya: 230407 OUTPUT_PATH 取得を修正
-        OUTPUT_PATH = os.path.dirname(sys.argv[0])
+    # ここにパターン2の処理
+    OUTPUT_PATH = os.getcwd()
     OUTPUT_PATH = os.path.join(OUTPUT_PATH, 'output2')
+
+    # フォルダが存在しない場合は作成
     if not os.path.exists(OUTPUT_PATH):
         os.makedirs(OUTPUT_PATH)
 
@@ -430,6 +401,9 @@ if st.button('パターン2：ペット一括書き出し'):
             
 
     st.markdown(f'<span style="color:red">書き出しが完了しました。フォルダ「output2」を確認してください。</span>', unsafe_allow_html=True)
+    shutil.make_archive('output2', 'zip', 'output2')
+    st.download_button(label="output2.zipをダウンロード", data=open('output2.zip', 'rb'), file_name='output2.zip', mime='application/zip')
+    os.remove('output2.zip')
 
 st.markdown('<br>', unsafe_allow_html=True)
 
@@ -439,17 +413,11 @@ st.write('パターン3：四角のものや大きすぎるものの書き出し
 # パターン3のボタンクリックで処理実行
 if st.button('パターン3：ペット一括書き出し'):
     # ここにパターン3の処理
-     #hakahara: 230407 OUTPUT_PATH 取得を修正
-    if getattr(sys, 'frozen', False): 
-        OUTPUT_PATH = os.path.dirname(sys.executable) 
-        cut_index = OUTPUT_PATH.find(".app")
-        if sys.platform == 'darwin' and cut_index != -1: # mac の .app で実行した時
-            OUTPUT_PATH = OUTPUT_PATH[:(cut_index + 4)] # .app までの path にする
-            OUTPUT_PATH = os.path.dirname(OUTPUT_PATH) # .app の dir path にする
-    else:
-         #shimomatsuya: 230407 OUTPUT_PATH 取得を修正
-        OUTPUT_PATH = os.path.dirname(sys.argv[0])
+
+    OUTPUT_PATH = os.getcwd()
     OUTPUT_PATH = os.path.join(OUTPUT_PATH, 'output3')
+
+    # フォルダが存在しない場合は作成
     if not os.path.exists(OUTPUT_PATH):
         os.makedirs(OUTPUT_PATH)
 
@@ -599,3 +567,6 @@ if st.button('パターン3：ペット一括書き出し'):
             
     
     st.markdown(f'<span style="color:red">書き出しが完了しました。フォルダ「output3」を確認してください。</span>', unsafe_allow_html=True)
+    shutil.make_archive('output3', 'zip', 'output3')
+    st.download_button(label="output3.zipをダウンロード", data=open('output3.zip', 'rb'), file_name='output3.zip', mime='application/zip')
+    os.remove('output3.zip')
