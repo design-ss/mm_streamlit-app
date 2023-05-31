@@ -5,6 +5,7 @@ import numpy as np
 from scipy import ndimage
 import shutil
 import sys
+import base64
 
 st.set_page_config(page_title='ミリモンペット書き出し', page_icon=":panda_face:")
 
@@ -209,7 +210,30 @@ if st.button('パターン1：ペット一括書き出し'):
             os.rename(src, dst)
             
     st.markdown(f'<span style="color:red">書き出しが完了しました。フォルダ「output1」確認してください。</span>', unsafe_allow_html=True)
+     # zipファイルの名前
+    zip_name = f'{os.path.basename(OUTPUT_PATH)}.zip'
 
+    # フォルダをzip圧縮
+    shutil.make_archive(OUTPUT_PATH, 'zip', OUTPUT_PATH)
+
+    # zipファイルの内容を取得
+    with open(zip_name, 'rb') as f:
+        file_content = f.read()
+
+    # ファイルの内容をbase64エンコード
+    file_content_encoded = base64.b64encode(file_content).decode()
+
+    # ダウンロードボタンを作成
+    st.download_button(
+        label=f'Download {zip_name}',
+        data=file_content_encoded,
+        file_name=zip_name,
+        mime='application/zip'
+    )
+
+    # zipファイルを削除
+    os.remove(zip_name)
+    
 st.markdown('<br>', unsafe_allow_html=True)
 
 # パターン2の説明文
