@@ -8,7 +8,7 @@ import base64
 import zipfile
 from PIL import Image, ImageOps
 
-st.set_page_config(page_title='ミリモンペット書き出し', page_icon=":panda_face:")
+st.set_page_config(page_title='mmペット書き出し', page_icon=":panda_face:")
 
 st.title('mmペット書き出し')
 
