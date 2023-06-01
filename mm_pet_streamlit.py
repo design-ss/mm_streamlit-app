@@ -7,8 +7,10 @@ import sys
 import base64
 import zipfile
 from PIL import Image, ImageOps
+import threading
+import time
 
-st.set_page_config(page_title='mmペット書き出し', page_icon=":panda_face:")
+st.set_page_config(page_title='mmペット書き出し')
 
 st.title('mmペット書き出し')
 
@@ -18,12 +20,26 @@ st.markdown('<br>''<br>', unsafe_allow_html=True)
 st.write('圧縮前のデータを使用してください。圧縮後データだとエラーが出ます。')
 st.markdown('---')
 
-# パターン1の説明文
+# 時間経過で消す処理
+def delete_data():
+    # 待機時間定義
+    time.sleep(30)
+
+    # 残ってるフォルダごと削除
+    if os.path.exists('output1'):
+        shutil.rmtree('output1')
+    elif os.path.exists('output2'):
+        shutil.rmtree('output2')
+    elif os.path.exists('output3'):
+        shutil.rmtree('output3')
+
+
+# パターン1説明
 st.write('パターン1：見た目の中心を取って配置します。')
 
-# パターン1のボタンクリックで処理実行
+# パターン1
 if st.button('パターン1：ペット一括書き出し'):
-    # output1フォルダが存在する場合、そのフォルダを削除
+    # output1フォルダがあったらそのフォルダを削除
     if os.path.exists('output1'):
         shutil.rmtree('output1')
     os.makedirs('output1')
@@ -31,7 +47,7 @@ if st.button('パターン1：ペット一括書き出し'):
     OUTPUT_PATH = os.getcwd()
     OUTPUT_PATH = os.path.join(OUTPUT_PATH, 'output1')
 
-    # フォルダが存在しない場合は作成
+    # フォルダが存在しないときは作成
     if not os.path.exists(OUTPUT_PATH):
         os.makedirs(OUTPUT_PATH)
 
@@ -43,10 +59,10 @@ if st.button('パターン1：ペット一括書き出し'):
         ####################################
         image = Image.open(export_file)
 
-        # 不要な透明画素を除去
+        # 不要な透明部分削除
         image = image.crop(image.getbbox())
 
-        # 短い辺：長い辺＝1：1.7以上の場合だけ、縦長または横長の画像がある程度大きく保存されるようにする
+        # メモ（のちほど）
         width, height = image.size
         if width < height:
             if width > 100 and height / width > 1.7:
@@ -59,47 +75,40 @@ if st.button('パターン1：ペット一括書き出し'):
             else:
                 resized_image = image.resize((100, int(height * 100 / width)))
 
-        # numpy配列に変換
         image_np = np.array(resized_image)
-
-        # アルファチャンネルを取得
         alpha = image_np[:, :, 3]
-
-        # 重心を計算
         cy, cx = ndimage.center_of_mass(alpha)
 
-        # 中心座標を計算
+        # 中心座標
         center_x = int(cx)
         center_y = int(cy)
 
-        # 100pixelの切り出し前に、切り出し予定部分の下の座標（center_y - 50）を取得
         bottom_coord = center_y + 50
 
-        # 画像の不透明部分の最下部の座標を測定（変数image_yとする）
+        # 画像の不透明部分の最下部
         image_y = np.max(np.nonzero(alpha)[0])
 
-        # 短い辺：長い辺＝1：1.7以上の場合だけ、縦長または横長の画像がある程度大きく保存されるようにする
+
         width, height = image.size
         if not (width < height and width > 100 and height / width > 1.7) and not (height < width and height > 100 and width / height > 1.7):
-            # （center_y - 50）-　image_yが10より大きい場合、この値が10になるように画像を下に移動
-            # （center_y - 50）-　image_yが10より小さい場合、この値が10になるように画像を上に移動
+            # （center_y - 50）-　image_yの値により移動
             if bottom_coord - image_y > 6:
                 center_y -= (bottom_coord - image_y) - 6
             elif bottom_coord - image_y < 6:
                 center_y += 6 - (bottom_coord - image_y)
 
-        # 中心座標を中心とした100×100ピクセルの画像を切り出しする前に全体的に0.8縮小
+        # 0.8縮小
         resized_image = resized_image.resize((int(resized_image.width * 0.8), int(resized_image.height * 0.8)))
         center_x = int(center_x * 0.8)
         center_y = int(center_y * 0.8)
 
-        # 中心座標を中心とした100×100ピクセルの画像を切り出し
+        # 100×100
         b_image = resized_image.crop((center_x - 50, center_y - 50, center_x + 50, center_y + 50))
 
-        # 100 × 100画像を保存
+        # 100 × 100保存
         b_image.save(os.path.join(OUTPUT_PATH,'b.png'))
 
-        # 50×50を生成
+        # 50 × 50保存
         b_image = b_image.resize((50, 50))
         b_image.save(os.path.join(OUTPUT_PATH,'a.png'))
         
@@ -109,35 +118,24 @@ if st.button('パターン1：ペット一括書き出し'):
 
         ####################################
 
-        # ファイルパスの設定
-
         # 画像を読み込む
         image = Image.open(export_file)
 
-        # 960×640を生成
+        # 960×640
         image = image.resize((960, 640))
-
-        # 960×640を保存
         image.save(os.path.join(OUTPUT_PATH,'e.png'))
 
 
-        # 不要な透明画素を除去
+        # 不要な透明部分削除
         image = image.crop(image.getbbox())
 
-        # numpy配列に変換
         image_np = np.array(image)
-
-        # アルファチャンネルを取得
         alpha = image_np[:, :, 3]
-
-        # 重心を計算
         cy, cx = ndimage.center_of_mass(alpha)
-
-        # 中心座標を計算
         center_x = int(cx)
         center_y = int(cy)
 
-        # 640pixelの切り出し前に、切り出し予定部分の下の座標（center_y + 320）を取得
+        # 下の座標を取得
         bottom_coord = center_y + 320
 
         # 画像の不透明部分の最下部の座標を測定（変数image_yとする）
@@ -145,24 +143,22 @@ if st.button('パターン1：ペット一括書き出し'):
 
         width, height = image.size
 
-        # （center_y + 320）-　image_yが15より大きい場合、この値が15になるように画像を下に移動
-        # （center_y + 320）-　image_yが15より小さい場合、この値が15になるように画像を上に移動
+       # （center_y - 50）-　image_yの値により移動
         if bottom_coord - image_y > 15:
             center_y -= (bottom_coord - image_y) - 15
         elif bottom_coord - image_y < 15:
             center_y += 15 - (bottom_coord - image_y)
 
-        # 中心座標を中心とした640×640ピクセルの画像を切り出し
+        # 640×640
         left = center_x - 640 // 2
         top = center_y - 640 // 2
         right = left + 640
         bottom = top + 640
         d_image = image.crop((left, top, right, bottom))
 
-        # 320×320を生成
+        # 320×320
         c_image = d_image.resize((320, 320))
 
-        # 画像を保存
         c_image.save(os.path.join(OUTPUT_PATH,'c.png'))
         d_image.save(os.path.join(OUTPUT_PATH,'d.png'))
         
@@ -173,10 +169,9 @@ if st.button('パターン1：ペット一括書き出し'):
         
         ####################################
         
-        # フォルダ名を格納したリスト
+
         dir_names = ["50x50", "100x100", "320x320", "640x640", "960x640"]
 
-        # フォルダがなければ作成
         for dir_name in dir_names:
             dir_path = os.path.join(OUTPUT_PATH, dir_name)
             if not os.path.exists(dir_path):
@@ -208,32 +203,33 @@ if st.button('パターン1：ペット一括書き出し'):
             src = os.path.join(OUTPUT_PATH, folder, file)
             dst = os.path.join(OUTPUT_PATH, folder, os.path.basename(export_file.name))
             os.rename(src, dst)
-    
             
+    # 削除実行　AI生成　
+    thread = threading.Thread(target=delete_data)
+    thread.start()
+                    
     st.markdown(f'<span style="color:red">書き出しが完了しました。フォルダ「output1」確認してください。</span>', unsafe_allow_html=True)
     shutil.make_archive('output1', 'zip', 'output1')
     st.download_button(label="output1.zipをダウンロード", data=open('output1.zip', 'rb'), file_name='output1.zip', mime='application/zip')
     os.remove('output1.zip')
 
-
-
     
 st.markdown('<br>', unsafe_allow_html=True)
 st.markdown('---')
-# パターン2の説明文
+
+# パターン2の説明
 st.write('パターン2：パターン１と同じく見た目の中心を取って配置しますが、1よりも上に配置されます。')
 
-# パターン2のボタンクリックで処理実行
+# パターン2
 if st.button('パターン2：ペット一括書き出し'):
-    # ここにパターン2の処理
-    # output2フォルダが存在する場合、そのフォルダを削除
+    # output2フォルダがあったらそのフォルダを削除
     if os.path.exists('output2'):
         shutil.rmtree('output2')
     os.makedirs('output2')
     OUTPUT_PATH = os.getcwd()
     OUTPUT_PATH = os.path.join(OUTPUT_PATH, 'output2')
 
-    # フォルダが存在しない場合は作成
+    # フォルダが存在しないときは作成
     if not os.path.exists(OUTPUT_PATH):
         os.makedirs(OUTPUT_PATH)
 
@@ -245,10 +241,10 @@ if st.button('パターン2：ペット一括書き出し'):
         ####################################
         image = Image.open(export_file)
 
-        # 不要な透明画素を除去
+        # 不要な透明部分削除
         image = image.crop(image.getbbox())
 
-        # 短い辺：長い辺＝1：1.7以上の場合だけ、縦長または横長の画像がある程度大きく保存されるようにする
+        # メモ（のちほど）
         width, height = image.size
         if width < height:
             if width > 100 and height / width > 1.7:
@@ -261,47 +257,37 @@ if st.button('パターン2：ペット一括書き出し'):
             else:
                 resized_image = image.resize((100, int(height * 100 / width)))
 
-        # numpy配列に変換
         image_np = np.array(resized_image)
-
-        # アルファチャンネルを取得
         alpha = image_np[:, :, 3]
-
-        # 重心を計算
         cy, cx = ndimage.center_of_mass(alpha)
 
-        # 中心座標を計算
+        # 中心座標
         center_x = int(cx)
         center_y = int(cy)
 
-        # 100pixelの切り出し前に、切り出し予定部分の下の座標（center_y - 50）を取得
         bottom_coord = center_y + 50
 
-        # 画像の不透明部分の最下部の座標を測定（変数image_yとする）
+        # 画像の不透明部分の最下部
         image_y = np.max(np.nonzero(alpha)[0])
 
-        # 短い辺：長い辺＝1：1.7以上の場合だけ、縦長または横長の画像がある程度大きく保存されるようにする
         width, height = image.size
         if not (width < height and width > 100 and height / width > 1.7) and not (height < width and height > 100 and width / height > 1.7):
-            # （center_y - 50）-　image_yが10より大きい場合、この値が10になるように画像を下に移動
-            # （center_y - 50）-　image_yが10より小さい場合、この値が10になるように画像を上に移動
+             # （center_y - 50）-　image_yの値により移動
             if bottom_coord - image_y > 18:
                 center_y -= (bottom_coord - image_y) - 18
             elif bottom_coord - image_y < 18:
                 center_y += 18 - (bottom_coord - image_y)
 
-        # 中心座標を中心とした100×100ピクセルの画像を切り出しする前に全体的に0.8縮小
+        # 0.8縮小
         resized_image = resized_image.resize((int(resized_image.width * 0.8), int(resized_image.height * 0.8)))
         center_x = int(center_x * 0.8)
         center_y = int(center_y * 0.8)
 
-        # 中心座標を中心とした100×100ピクセルの画像を切り出し
+        #100×100保存
         b_image = resized_image.crop((center_x - 50, center_y - 50, center_x + 50, center_y + 50))
-
-        # 100 × 100画像を保存
         b_image.save(os.path.join(OUTPUT_PATH,'b.png'))
 
-        # 50×50を生成
+        # 50×50保存
         b_image = b_image.resize((50, 50))
         b_image.save(os.path.join(OUTPUT_PATH,'a.png'))
         
@@ -311,60 +297,47 @@ if st.button('パターン2：ペット一括書き出し'):
 
         ####################################
 
-        # ファイルパスの設定
 
         # 画像を読み込む
         image = Image.open(export_file)
 
-        # 960×640を生成
+        # 960×640
         image = image.resize((960, 640))
-
-        # 960×640を保存
         image.save(os.path.join(OUTPUT_PATH,'e.png'))
 
 
-        # 不要な透明画素を除去
+        # 不要な透明部分削除
         image = image.crop(image.getbbox())
-
-        # numpy配列に変換
+        
         image_np = np.array(image)
-
-        # アルファチャンネルを取得
         alpha = image_np[:, :, 3]
-
-        # 重心を計算
         cy, cx = ndimage.center_of_mass(alpha)
-
-        # 中心座標を計算
         center_x = int(cx)
         center_y = int(cy)
 
-        # 640pixelの切り出し前に、切り出し予定部分の下の座標（center_y + 320）を取得
         bottom_coord = center_y + 320
 
         # 画像の不透明部分の最下部の座標を測定（変数image_yとする）
         image_y = np.max(np.nonzero(alpha)[0])
 
         width, height = image.size
-
-        # （center_y + 320）-　image_yが15より大きい場合、この値が15になるように画像を下に移動
-        # （center_y + 320）-　image_yが15より小さい場合、この値が15になるように画像を上に移動
+        
+       # （center_y - 50）-　image_yの値により移動
         if bottom_coord - image_y > 15:
             center_y -= (bottom_coord - image_y) - 15
         elif bottom_coord - image_y < 15:
             center_y += 15 - (bottom_coord - image_y)
 
-        # 中心座標を中心とした640×640ピクセルの画像を切り出し
+        # 640×640
         left = center_x - 640 // 2
         top = center_y - 640 // 2
         right = left + 640
         bottom = top + 640
         d_image = image.crop((left, top, right, bottom))
 
-        # 320×320を生成
+        # 320×320
         c_image = d_image.resize((320, 320))
 
-        # 画像を保存
         c_image.save(os.path.join(OUTPUT_PATH,'c.png'))
         d_image.save(os.path.join(OUTPUT_PATH,'d.png'))
         
@@ -375,10 +348,8 @@ if st.button('パターン2：ペット一括書き出し'):
         
         ####################################
         
-        # フォルダ名を格納したリスト
         dir_names = ["50x50", "100x100", "320x320", "640x640", "960x640"]
 
-        # フォルダがなければ作成
         for dir_name in dir_names:
             dir_path = os.path.join(OUTPUT_PATH, dir_name)
             if not os.path.exists(dir_path):
@@ -410,8 +381,11 @@ if st.button('パターン2：ペット一括書き出し'):
             src = os.path.join(OUTPUT_PATH, folder, file)
             dst = os.path.join(OUTPUT_PATH, folder, os.path.basename(export_file.name))
             os.rename(src, dst)
-            
-
+    
+    # 削除実行　AI生成
+    thread = threading.Thread(target=delete_data)
+    thread.start() 
+           
     st.markdown(f'<span style="color:red">書き出しが完了しました。フォルダ「output2」を確認してください。</span>', unsafe_allow_html=True)
     shutil.make_archive('output2', 'zip', 'output2')
     st.download_button(label="output2.zipをダウンロード", data=open('output2.zip', 'rb'), file_name='output2.zip', mime='application/zip')
@@ -449,7 +423,7 @@ if st.button('パターン3：ペット一括書き出し'):
         ####################################
         image = Image.open(export_file)
 
-        # 不要な透明画素を除去
+        # 不要な透明部分削除
         image = image.crop(image.getbbox())
 
          # 画像の幅と高さを取得
@@ -504,7 +478,7 @@ if st.button('パターン3：ペット一括書き出し'):
         image.save(os.path.join(OUTPUT_PATH,'e.png'))
 
 
-        # 不要な透明画素を除去
+        # 不要な透明部分削除
         image = image.crop(image.getbbox())
 
         # numpy配列に変換
@@ -591,7 +565,10 @@ if st.button('パターン3：ペット一括書き出し'):
             src = os.path.join(OUTPUT_PATH, folder, file)
             dst = os.path.join(OUTPUT_PATH, folder, os.path.basename(export_file.name))
             os.rename(src, dst)
-            
+     
+     # スレッドを作成して実行
+    thread = threading.Thread(target=delete_data)
+    thread.start()       
     
     st.markdown(f'<span style="color:red">書き出しが完了しました。フォルダ「output3」を確認してください。</span>', unsafe_allow_html=True)
     shutil.make_archive('output3', 'zip', 'output3')
