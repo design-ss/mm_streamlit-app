@@ -15,6 +15,7 @@ st.title('mmペット書き出し')
 export_files = st.file_uploader("ファイルを選択", accept_multiple_files=True)
 
 st.markdown('<br>''<br>', unsafe_allow_html=True)
+st.write('圧縮前のデータを使用してください。圧縮後データだとエラーが出ます。')
 st.markdown('---')
 
 # パターン1の説明文
