@@ -565,8 +565,8 @@ if st.button('パターン3：ペット一括書き出し'):
             src = os.path.join(OUTPUT_PATH, folder, file)
             dst = os.path.join(OUTPUT_PATH, folder, os.path.basename(export_file.name))
             os.rename(src, dst)
-     
-     # スレッドを作成して実行
+          
+    # 削除実行　AI生成　
     thread = threading.Thread(target=delete_data)
     thread.start()       
     
