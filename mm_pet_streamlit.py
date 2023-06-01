@@ -1,13 +1,12 @@
 import os
 import streamlit as st
-from PIL import Image
 import numpy as np
 from scipy import ndimage
 import shutil
 import sys
 import base64
 import zipfile
-from PIL import Image
+from PIL import Image, ImageOps
 
 st.set_page_config(page_title='ミリモンペット書き出し', page_icon=":panda_face:")
 
@@ -419,7 +418,11 @@ if st.button('パターン2：ペット一括書き出し'):
 st.markdown('<br>', unsafe_allow_html=True)
 
 # パターン3の説明文
-st.write('パターン3：四角のものや大きすぎるものの書き出しに向いてます。')
+st.write('パターン3：1枚ずつ調整できます。')
+
+horizontal_shift = st.slider('数字を増やすほど左に移動します。', min_value=-30, max_value=30, value=0)
+vertical_shift = st.slider('数字を増やすほど上に移動します。', min_value=-30, max_value=30, value=0)
+scale = st.slider('縮小率を選択してください', min_value=0.0, max_value=1.0, value=0.7)
 
 # パターン3のボタンクリックで処理実行
 if st.button('パターン3：ペット一括書き出し'):
@@ -457,15 +460,16 @@ if st.button('パターン3：ペット一括書き出し'):
             resized_image = image.resize((100, int(height * 100 / width)))
 
         # 画像をちょっと縮小
-        resized_image = resized_image.resize((int(resized_image.width * 0.7), int(resized_image.height * 0.7)))
+        resized_image = resized_image.resize((int(resized_image.width * scale), int(resized_image.height * scale)))
 
 
-        # 画像を中央に合わせて切り抜く
-        left = (resized_image.width - 100) // 2
-        top = (resized_image.height - 100) // 2
+       # 画像を中央に合わせて切り抜く
+        left = (resized_image.width - 100) // 2 + horizontal_shift
+        top = (resized_image.height - 100) // 2 + vertical_shift
         right = left + 100
         bottom = top + 100
         b_image = resized_image.crop((left, top, right, bottom))
+
 
         # 100 × 100画像を保存
         b_image.save(os.path.join(OUTPUT_PATH,'b.png'))
@@ -474,6 +478,12 @@ if st.button('パターン3：ペット一括書き出し'):
         b_image = b_image.resize((50, 50))
         b_image.save(os.path.join(OUTPUT_PATH,'a.png'))
         
+        # 画像のプレビューを表示
+        image = Image.open('output3/b.png')
+        image_with_border = ImageOps.expand(image, border=1, fill='black')
+        st.image(image_with_border, caption='画像のキャプション', use_column_width=False)
+
+                
         ####################################
 
         #　640 × 640、320 ×　320　のリサイズ
