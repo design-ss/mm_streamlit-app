@@ -26,13 +26,19 @@ def delete_data():
     # 待機時間定義
     time.sleep(10)
 
-    # 残ってるフォルダごと削除
+    # データを削除
     if os.path.exists('output1'):
         shutil.rmtree('output1')
-    elif os.path.exists('output2'):
+    if os.path.exists('output2'):
         shutil.rmtree('output2')
-    elif os.path.exists('output3'):
+    if os.path.exists('output3'):
         shutil.rmtree('output3')
+    if os.path.exists('output1.zip'):
+        os.remove('output1.zip')
+    if os.path.exists('output2.zip'):
+        os.remove('output2.zip')
+    if os.path.exists('output3.zip'):
+        os.remove('output3.zip')
 
 
 # パターン1説明
