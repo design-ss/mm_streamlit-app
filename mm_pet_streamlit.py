@@ -10,7 +10,7 @@ from PIL import Image, ImageOps
 
 st.set_page_config(page_title='ミリモンペット書き出し', page_icon=":panda_face:")
 
-st.title('ミリモンペット書き出し')
+st.title('mmペット書き出し')
 
 export_files = st.file_uploader("ファイルを選択", accept_multiple_files=True)
 
