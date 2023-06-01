@@ -14,6 +14,7 @@ st.set_page_config(page_title='mmペット書き出し')
 
 st.title('mmペット書き出し')
 
+#ファイル選択
 export_files = st.file_uploader("ファイルを選択", accept_multiple_files=True)
 
 st.markdown('<br>''<br>', unsafe_allow_html=True)
@@ -23,7 +24,7 @@ st.markdown('---')
 # 時間経過で消す処理
 def delete_data():
     # 待機時間定義
-    time.sleep(30)
+    time.sleep(10)
 
     # 残ってるフォルダごと削除
     if os.path.exists('output1'):
@@ -39,6 +40,9 @@ st.write('パターン1：見た目の中心を取って配置します。')
 
 # パターン1
 if st.button('パターン1：ペット一括書き出し'):
+    # カウントダウン削除実行　AI生成　
+    thread = threading.Thread(target=delete_data)
+    thread.start()
     # output1フォルダがあったらそのフォルダを削除
     if os.path.exists('output1'):
         shutil.rmtree('output1')
@@ -204,9 +208,7 @@ if st.button('パターン1：ペット一括書き出し'):
             dst = os.path.join(OUTPUT_PATH, folder, os.path.basename(export_file.name))
             os.rename(src, dst)
             
-    # 削除実行　AI生成　
-    thread = threading.Thread(target=delete_data)
-    thread.start()
+
                     
     st.markdown(f'<span style="color:red">書き出しが完了しました。フォルダ「output1」確認してください。</span>', unsafe_allow_html=True)
     shutil.make_archive('output1', 'zip', 'output1')
@@ -402,7 +404,6 @@ scale = st.slider('数字を増やすほど拡大されます。', min_value=0.0
 
 # パターン3のボタンクリックで処理実行
 if st.button('パターン3：ペット一括書き出し'):
-    # ここにパターン3の処理
     # output3フォルダが存在する場合、そのフォルダを削除
     if os.path.exists('output3'):
         shutil.rmtree('output3')
@@ -422,11 +423,7 @@ if st.button('パターン3：ペット一括書き出し'):
 
         ####################################
         image = Image.open(export_file)
-
-        # 不要な透明部分削除
         image = image.crop(image.getbbox())
-
-         # 画像の幅と高さを取得
         width, height = image.size
 
         # 短い辺を100に合わせるようにリサイズ
@@ -435,7 +432,7 @@ if st.button('パターン3：ペット一括書き出し'):
         else:
             resized_image = image.resize((100, int(height * 100 / width)))
 
-        # 画像をちょっと縮小
+        # 画像をちょっと縮小　ユーザーが弄れる
         resized_image = resized_image.resize((int(resized_image.width * scale), int(resized_image.height * scale)))
 
 
