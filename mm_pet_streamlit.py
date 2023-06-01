@@ -15,6 +15,7 @@ st.title('ミリモンペット書き出し')
 export_files = st.file_uploader("ファイルを選択", accept_multiple_files=True)
 
 st.markdown('<br>''<br>', unsafe_allow_html=True)
+st.markdown('---')
 
 # パターン1の説明文
 st.write('パターン1：見た目の中心を取って配置します。')
@@ -217,7 +218,7 @@ if st.button('パターン1：ペット一括書き出し'):
 
     
 st.markdown('<br>', unsafe_allow_html=True)
-
+st.markdown('---')
 # パターン2の説明文
 st.write('パターン2：パターン１と同じく見た目の中心を取って配置しますが、1よりも上に配置されます。')
 
@@ -416,13 +417,13 @@ if st.button('パターン2：ペット一括書き出し'):
     os.remove('output2.zip')
 
 st.markdown('<br>', unsafe_allow_html=True)
-
+st.markdown('---')
 # パターン3の説明文
 st.write('パターン3：1枚ずつ調整できます。')
 
 horizontal_shift = st.slider('数字を増やすほど左に移動します。', min_value=-30, max_value=30, value=0)
 vertical_shift = st.slider('数字を増やすほど上に移動します。', min_value=-30, max_value=30, value=0)
-scale = st.slider('縮小率を選択してください', min_value=0.0, max_value=1.0, value=0.7)
+scale = st.slider('数字を増やすほど拡大されます。', min_value=0.0, max_value=2.0, value=0.7)
 
 # パターン3のボタンクリックで処理実行
 if st.button('パターン3：ペット一括書き出し'):
@@ -480,8 +481,8 @@ if st.button('パターン3：ペット一括書き出し'):
         
         # 画像のプレビューを表示
         image = Image.open('output3/b.png')
-        image_with_border = ImageOps.expand(image, border=1, fill='black')
-        st.image(image_with_border, caption='画像のキャプション', use_column_width=False)
+        image_with_border = ImageOps.expand(image, border=1, fill='red')
+        st.image(image_with_border, caption='100×100のプレビュー', use_column_width=False)
 
                 
         ####################################
