@@ -156,6 +156,28 @@ if st.button('パターン1：ペット一括書き出し'):
                 c_image = Image.new("RGBA", (320, 320))
                 d_image = Image.new("RGBA", (640, 640))
                 
+                
+                
+                 # メモリ上に画像データを保存
+                with io.BytesIO() as img_buffer:
+                    a_image.save(img_buffer, format="PNG")
+                    zip.writestr(f"{os.path.splitext(export_file.name)[0]}/a.png", img_buffer.getvalue())
+                with io.BytesIO() as img_buffer:
+                    b_image.save(img_buffer, format="PNG")
+                    zip.writestr(f"{os.path.splitext(export_file.name)[0]}/b.png", img_buffer.getvalue())
+                with io.BytesIO() as img_buffer:
+                    c_image.save(img_buffer, format="PNG")
+                    zip.writestr(f"{os.path.splitext(export_file.name)[0]}/c.png", img_buffer.getvalue())
+                with io.BytesIO() as img_buffer:
+                    d_image.save(img_buffer, format="PNG")
+                    zip.writestr(f"{os.path.splitext(export_file.name)[0]}/d.png", img_buffer.getvalue())
+                with io.BytesIO() as img_buffer:
+                    e_image.save(img_buffer, format="PNG")
+                    zip.writestr(f"{os.path.splitext(export_file.name)[0]}/e.png", img_buffer.getvalue())
+
+        buffer.seek(0)
+                
+                
 
                 ####################################
                 
