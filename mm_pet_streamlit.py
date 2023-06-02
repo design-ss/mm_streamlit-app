@@ -21,12 +21,11 @@ st.markdown('<br>''<br>', unsafe_allow_html=True)
 st.write('圧縮前のデータを使用してください。圧縮後データだとエラーが出ます。')
 st.markdown('---')
 
-# 時間経過で消す処理
+# 時間経過で消す 同時処理はスレッド実行??
 def delete_data():
-    # 待機時間定義
     time.sleep(10)
 
-    # データを削除
+    # フォルダとzip削除
     if os.path.exists('output1'):
         shutil.rmtree('output1')
     if os.path.exists('output2'):
@@ -46,10 +45,11 @@ st.write('パターン1：見た目の中心を取って配置します。')
 
 # パターン1
 if st.button('パターン1：ペット一括書き出し'):
-    # カウントダウン削除実行　AI生成　
+    # カウントダウン削除実行　https://ja.pymotw.com/2/threading/
     thread = threading.Thread(target=delete_data)
     thread.start()
-    # output1フォルダがあったらそのフォルダを削除
+    
+    # output1フォルダがあったら削除
     if os.path.exists('output1'):
         shutil.rmtree('output1')
     os.makedirs('output1')
@@ -60,6 +60,11 @@ if st.button('パターン1：ペット一括書き出し'):
     # フォルダが存在しないときは作成
     if not os.path.exists(OUTPUT_PATH):
         os.makedirs(OUTPUT_PATH)
+    
+    # 作業階層のパスてすと
+    current_dir = os.getcwd()
+    # printでは出ない
+    st.write(f'ここにある: {current_dir}')
 
     for export_file in export_files:
         ####################################
