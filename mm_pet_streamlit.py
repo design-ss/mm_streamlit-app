@@ -62,9 +62,9 @@ if st.button('パターン1：ペット一括書き出し'):
         os.makedirs(OUTPUT_PATH)
     
     # 作業階層のパスてすと
-    current_dir = os.getcwd()
+    cd = os.getcwd()
     # printでは出ない
-    st.write(f'保存先？: {current_dir}')
+    st.write(f'保存先？: {cd}')
 
     for export_file in export_files:
         ####################################
