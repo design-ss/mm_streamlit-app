@@ -407,7 +407,7 @@ if st.button('パターン2：ペット一括書き出し'):
 st.markdown('<br>', unsafe_allow_html=True)
 st.markdown('---')
 # パターン3の説明文
-st.write('パターン3：1枚ずつ調整できます。')
+st.write('パターン3：1枚ずつ調整できます。ボタンを押すとプレビューが出ます。')
 
 horizontal_shift = st.slider('数字を増やすほど左に移動します。', min_value=-30, max_value=30, value=0)
 vertical_shift = st.slider('数字を増やすほど上に移動します。', min_value=-30, max_value=30, value=0)
@@ -423,7 +423,7 @@ if st.button('パターン3：ペット一括書き出し'):
     OUTPUT_PATH = os.getcwd()
     OUTPUT_PATH = os.path.join(OUTPUT_PATH, 'output3')
 
-    # フォルダが存在しない場合は作成
+    # フォルダが存在しない時は作成
     if not os.path.exists(OUTPUT_PATH):
         os.makedirs(OUTPUT_PATH)
 
@@ -455,10 +455,10 @@ if st.button('パターン3：ペット一括書き出し'):
         b_image = resized_image.crop((left, top, right, bottom))
 
 
-        # 100 × 100画像を保存
+        # 100×100保存
         b_image.save(os.path.join(OUTPUT_PATH,'b.png'))
 
-        # 50×50を生成
+        # 50×50保存
         b_image = b_image.resize((50, 50))
         b_image.save(os.path.join(OUTPUT_PATH,'a.png'))
         
@@ -474,35 +474,23 @@ if st.button('パターン3：ペット一括書き出し'):
 
         ####################################
 
-        # ファイルパスの設定
-
         # 画像を読み込む
         image = Image.open(export_file)
 
-        # 960×640を生成
+        # 960×640保存
         image = image.resize((960, 640))
-
-        # 960×640を保存
         image.save(os.path.join(OUTPUT_PATH,'e.png'))
-
 
         # 不要な透明部分削除
         image = image.crop(image.getbbox())
 
-        # numpy配列に変換
         image_np = np.array(image)
-
-        # アルファチャンネルを取得
         alpha = image_np[:, :, 3]
-
-        # 重心を計算
         cy, cx = ndimage.center_of_mass(alpha)
-
-        # 中心座標を計算
         center_x = int(cx)
         center_y = int(cy)
 
-        # 640pixelの切り出し前に、切り出し予定部分の下の座標（center_y + 320）を取得
+        # 下の座標を取得
         bottom_coord = center_y + 320
 
         # 画像の不透明部分の最下部の座標を測定（変数image_yとする）
@@ -510,24 +498,22 @@ if st.button('パターン3：ペット一括書き出し'):
 
         width, height = image.size
 
-        # （center_y + 320）-　image_yが15より大きい場合、この値が15になるように画像を下に移動
-        # （center_y + 320）-　image_yが15より小さい場合、この値が15になるように画像を上に移動
+        # （center_y - 50）-　image_yの値により移動
         if bottom_coord - image_y > 15:
             center_y -= (bottom_coord - image_y) - 15
         elif bottom_coord - image_y < 15:
             center_y += 15 - (bottom_coord - image_y)
 
-        # 中心座標を中心とした640×640ピクセルの画像を切り出し
+        # 640×640
         left = center_x - 640 // 2
         top = center_y - 640 // 2
         right = left + 640
         bottom = top + 640
         d_image = image.crop((left, top, right, bottom))
 
-        # 320×320を生成
+        # 320×320
         c_image = d_image.resize((320, 320))
 
-        # 画像を保存
         c_image.save(os.path.join(OUTPUT_PATH,'c.png'))
         d_image.save(os.path.join(OUTPUT_PATH,'d.png'))
         
