@@ -1,14 +1,9 @@
-# import os
 import streamlit as st
 import numpy as np
 from scipy import ndimage
-# import shutil
-# import sys
-# import base64
 import zipfile
 import io
 from PIL import Image, ImageOps
-# import threading
 import time
 
 
@@ -46,26 +41,6 @@ st.markdown('<br>''<br>', unsafe_allow_html=True)
 st.write('圧縮前のデータを使用してください。圧縮後データだとエラーが出ます。')
 st.markdown('---')
 
-# 時間経過で消す 同時処理はスレッド実行??
-# def delete_data():
-#     time.sleep(10)
-
-#     # フォルダとzip削除
-#     if os.path.exists('output1'):
-#         shutil.rmtree('output1')
-#     if os.path.exists('output2'):
-#         shutil.rmtree('output2')
-#     if os.path.exists('output3'):
-#         shutil.rmtree('output3')
-#     if os.path.exists('output1.zip'):
-#         os.remove('output1.zip')
-#     if os.path.exists('output2.zip'):
-#         os.remove('output2.zip')
-#     if os.path.exists('output3.zip'):
-#         os.remove('output3.zip')
-
-
-
 # パターン1説明
 st.write('パターン1：見た目の中心を取って配置します。')
 
@@ -73,27 +48,6 @@ st.write('パターン1：見た目の中心を取って配置します。')
 if st.button('パターン1：ペット一括書き出し'):
     with st.spinner("画像生成中です..."):
         binary_dict.clear() # 初期化
-
-        # カウントダウン削除実行　https://ja.pymotw.com/2/threading/
-        # thread = threading.Thread(target=delete_data)
-        # thread.start()
-        
-        # output1フォルダがあったら削除
-        # if os.path.exists('output1'):
-        #     shutil.rmtree('output1')
-        # os.makedirs('output1')
-        
-        # OUTPUT_PATH = os.getcwd()
-        # OUTPUT_PATH = os.path.join(OUTPUT_PATH, 'output1')
-
-        # フォルダが存在しないときは作成
-        # if not os.path.exists(OUTPUT_PATH):
-        #     os.makedirs(OUTPUT_PATH)
-        
-        # 作業階層のパスてすと
-        # cd = os.getcwd()
-        # # printでは出ない
-        # st.write(f'保存先？: {cd}')
 
         for export_file in export_files:
             ####################################
@@ -219,49 +173,6 @@ if st.button('パターン1：ペット一括書き出し'):
 
 
             ####################################
-            
-            # 書き出しフォルダを作成,移動
-            
-            ####################################
-
-            # dir_names = ["50x50", "100x100", "320x320", "640x640", "960x640"]
-
-            # for dir_name in dir_names:
-            #     dir_path = os.path.join(OUTPUT_PATH, dir_name)
-            #     if not os.path.exists(dir_path):
-            #         os.makedirs(dir_path)
-
-            # # フォルダとファイルのパス
-            # folder_paths = ['50x50', '100x100', '320x320', '640x640', '960x640']
-            # file_paths = ['a.png', 'b.png', 'c.png', 'd.png', 'e.png']
-
-            # # ファイルを移動する
-            # for folder, file in zip(folder_paths, file_paths):
-            #     source_path = os.path.join(OUTPUT_PATH, file)
-            #     destination_path = os.path.join(OUTPUT_PATH, folder, file)
-            #     shutil.move(source_path, destination_path)
-
-                
-            # ####################################
-            
-            # # 元ファイル名にリネーム
-            
-            # ####################################
-
-            # # リネームするファイルとフォルダのパス
-            # folder_paths = ['50x50', '100x100', '320x320', '640x640', '960x640']
-            # file_names = ['a.png', 'b.png', 'c.png', 'd.png', 'e.png']
-
-            # # 元ファイル名にリネーム
-            # for folder, file in zip(folder_paths, file_names):
-            #     src = os.path.join(OUTPUT_PATH, folder, file)
-            #     dst = os.path.join(OUTPUT_PATH, folder, os.path.basename(export_file.name))
-            #     os.rename(src, dst)
-                                    
-        # st.markdown(f'<span style="color:red">書き出しが完了しました。フォルダ「output1」確認してください。</span>', unsafe_allow_html=True)
-        # shutil.make_archive('output1', 'zip', 'output1')
-        # st.download_button(label="output1.zipをダウンロード", data=open('output1.zip', 'rb'), file_name='output1.zip', mime='application/zip')
-        # os.remove('output1.zip')
         time.sleep(3)
     st.markdown(f'<span style="color:red">書き出しが完了しました。下のボタンでダウンロードできます。</span>', unsafe_allow_html=True)
     show_zip_download("output1.zip", binary_dict)
@@ -278,17 +189,6 @@ st.write('パターン2：パターン１と同じく見た目の中心を取っ
 if st.button('パターン2：ペット一括書き出し'):
     with st.spinner("画像生成中です..."):
         binary_dict.clear() # 初期化
-
-        # output2フォルダがあったらそのフォルダを削除
-        # if os.path.exists('output2'):
-        #     shutil.rmtree('output2')
-        # os.makedirs('output2')
-        # OUTPUT_PATH = os.getcwd()
-        # OUTPUT_PATH = os.path.join(OUTPUT_PATH, 'output2')
-
-        # フォルダが存在しないときは作成
-        # if not os.path.exists(OUTPUT_PATH):
-        #     os.makedirs(OUTPUT_PATH)
 
         for export_file in export_files:
             ####################################
@@ -399,60 +299,9 @@ if st.button('パターン2：ペット一括書き出し'):
             # 320×320
             c_image = d_image.resize((320, 320))
 
-            # c_image.save(os.path.join(OUTPUT_PATH,'c.png'))
-            # d_image.save(os.path.join(OUTPUT_PATH,'d.png'))
             binary_dict["/320x320/" + export_file.name] = c_image
             binary_dict["/640x640/" + export_file.name] = d_image
             
-
-            ####################################
-            
-            # 書き出しフォルダを作成,移動
-            
-            ####################################
-
-            # dir_names = ["50x50", "100x100", "320x320", "640x640", "960x640"]
-
-            # for dir_name in dir_names:
-            #     dir_path = os.path.join(OUTPUT_PATH, dir_name)
-            #     if not os.path.exists(dir_path):
-            #         os.makedirs(dir_path)
-
-            # # フォルダとファイルのパス
-            # folder_paths = ['50x50', '100x100', '320x320', '640x640', '960x640']
-            # file_paths = ['a.png', 'b.png', 'c.png', 'd.png', 'e.png']
-
-            # # ファイルを移動する
-            # for folder, file in zip(folder_paths, file_paths):
-            #     source_path = os.path.join(OUTPUT_PATH, file)
-            #     destination_path = os.path.join(OUTPUT_PATH, folder, file)
-            #     shutil.move(source_path, destination_path)
-
-                
-            ####################################
-            
-            # 元ファイル名にリネーム
-            
-            ####################################
-
-            # リネームするファイルとフォルダのパス
-            # folder_paths = ['50x50', '100x100', '320x320', '640x640', '960x640']
-            # file_names = ['a.png', 'b.png', 'c.png', 'd.png', 'e.png']
-
-            # # 元ファイル名にリネーム
-            # for folder, file in zip(folder_paths, file_names):
-            #     src = os.path.join(OUTPUT_PATH, folder, file)
-            #     dst = os.path.join(OUTPUT_PATH, folder, os.path.basename(export_file.name))
-            #     os.rename(src, dst)
-        
-        # 削除実行　AI生成
-        # thread = threading.Thread(target=delete_data)
-        # thread.start() 
-            
-        # st.markdown(f'<span style="color:red">書き出しが完了しました。フォルダ「output2」を確認してください。</span>', unsafe_allow_html=True)
-        # shutil.make_archive('output2', 'zip', 'output2')
-        # st.download_button(label="output2.zipをダウンロード", data=open('output2.zip', 'rb'), file_name='output2.zip', mime='application/zip')
-        # os.remove('output2.zip')
         time.sleep(3)
     st.markdown(f'<span style="color:red">書き出しが完了しました。下のボタンでダウンロードできます。</span>', unsafe_allow_html=True)
     show_zip_download("output2.zip", binary_dict)
@@ -470,18 +319,6 @@ scale = st.slider('数字を増やすほど拡大されます。', min_value=0.0
 if st.button('パターン3：ペット一括書き出し'):
     with st.spinner("画像生成中です..."):
         binary_dict.clear() # 初期化
-
-        # output3フォルダが存在する場合、そのフォルダを削除
-        # if os.path.exists('output3'):
-        #     shutil.rmtree('output3')
-        # os.makedirs('output3')
-
-        # OUTPUT_PATH = os.getcwd()
-        # OUTPUT_PATH = os.path.join(OUTPUT_PATH, 'output3')
-
-        # フォルダが存在しない時は作成
-        # if not os.path.exists(OUTPUT_PATH):
-        #     os.makedirs(OUTPUT_PATH)
 
         for export_file in export_files:
             ####################################
@@ -519,11 +356,6 @@ if st.button('パターン3：ペット一括書き出し'):
             b_image = b_image.resize((50, 50))
             # b_image.save(os.path.join(OUTPUT_PATH,'a.png'))
             binary_dict["/50x50/" + export_file.name] = b_image
-            
-            # 画像のプレビューを表示
-            # image = Image.open('output3/b.png')
-            # image_with_border = ImageOps.expand(image, border=1, fill='red')
-            # st.image(image_with_border, caption='100×100のプレビュー', use_column_width=False)
 
             st.image(getPreviewImage(b_image), caption='100×100のプレビュー', use_column_width=False)
 
@@ -576,62 +408,9 @@ if st.button('パターン3：ペット一括書き出し'):
             # 320×320
             c_image = d_image.resize((320, 320))
 
-            # c_image.save(os.path.join(OUTPUT_PATH,'c.png'))
-            # d_image.save(os.path.join(OUTPUT_PATH,'d.png'))
             binary_dict["/320x320/" + export_file.name] = c_image
             binary_dict["/640x640/" + export_file.name] = d_image
 
-
-            ####################################
-            
-            # 書き出しフォルダを作成,移動
-            
-            ####################################
-
-            # フォルダ名を格納したリスト
-            # dir_names = ["50x50", "100x100", "320x320", "640x640", "960x640"]
-
-            # # フォルダがなければ作成
-            # for dir_name in dir_names:
-            #     dir_path = os.path.join(OUTPUT_PATH, dir_name)
-            #     if not os.path.exists(dir_path):
-            #         os.makedirs(dir_path)
-
-            # # フォルダとファイルのパス
-            # folder_paths = ['50x50', '100x100', '320x320', '640x640', '960x640']
-            # file_paths = ['a.png', 'b.png', 'c.png', 'd.png', 'e.png']
-
-            # # ファイルを移動する
-            # for folder, file in zip(folder_paths, file_paths):
-            #     source_path = os.path.join(OUTPUT_PATH, file)
-            #     destination_path = os.path.join(OUTPUT_PATH, folder, file)
-            #     shutil.move(source_path, destination_path)
-
-                
-            ####################################
-            
-            # 元ファイル名にリネーム
-            
-            ####################################
-
-            # # リネームするファイルとフォルダのパス
-            # folder_paths = ['50x50', '100x100', '320x320', '640x640', '960x640']
-            # file_names = ['a.png', 'b.png', 'c.png', 'd.png', 'e.png']
-
-            # # 元ファイル名にリネーム
-            # for folder, file in zip(folder_paths, file_names):
-            #     src = os.path.join(OUTPUT_PATH, folder, file)
-            #     dst = os.path.join(OUTPUT_PATH, folder, os.path.basename(export_file.name))
-            #     os.rename(src, dst)
-            
-        # 削除実行　AI生成　
-        # thread = threading.Thread(target=delete_data)
-        # thread.start()       
-        
-        # st.markdown(f'<span style="color:red">書き出しが完了しました。フォルダ「output3」を確認してください。</span>', unsafe_allow_html=True)
-        # shutil.make_archive('output3', 'zip', 'output3')
-        # st.download_button(label="output3.zipをダウンロード", data=open('output3.zip', 'rb'), file_name='output3.zip', mime='application/zip')
-        # os.remove('output3.zip')
         time.sleep(3)
     st.markdown(f'<span style="color:red">書き出しが完了しました。下のボタンでダウンロードできます。</span>', unsafe_allow_html=True)
     show_zip_download("output3.zip", binary_dict)
