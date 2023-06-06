@@ -1,14 +1,39 @@
-import os
+# import os
 import streamlit as st
 import numpy as np
 from scipy import ndimage
-import shutil
-import sys
-import base64
+# import shutil
+# import sys
+# import base64
 import zipfile
+import io
 from PIL import Image, ImageOps
-import threading
+# import threading
 import time
+
+
+binary_dict = dict()
+
+def show_zip_download(file_name, target_dict):
+    # st.write(target_dict)
+    with io.BytesIO() as buffer:
+        with zipfile.ZipFile(buffer, "w") as zip:
+            for key in target_dict.keys():
+                image = target_dict[key]
+                img_buffer = io.BytesIO()
+                image.save(img_buffer, "PNG")
+                zip.writestr(key, img_buffer.getvalue())
+        buffer.seek(0)
+        st.download_button(label=file_name + "をダウンロード", data=buffer, file_name=file_name, mime='application/zip')
+
+def getPreviewImage(image, border_size = 1, border_color='red'):
+    if image.mode == "P": # 圧縮されたイメージ
+        converted_img = image.convert("RGBA")
+        img_with_border = ImageOps.expand(converted_img, border = border_size, fill=border_color)
+        return img_with_border
+    
+    img_with_border = ImageOps.expand(image, border = border_size, fill=border_color)
+    return img_with_border
 
 st.set_page_config(page_title='mmペット書き出し')
 
@@ -22,22 +47,23 @@ st.write('圧縮前のデータを使用してください。圧縮後データ�
 st.markdown('---')
 
 # 時間経過で消す 同時処理はスレッド実行??
-def delete_data():
-    time.sleep(10)
+# def delete_data():
+#     time.sleep(10)
 
-    # フォルダとzip削除
-    if os.path.exists('output1'):
-        shutil.rmtree('output1')
-    if os.path.exists('output2'):
-        shutil.rmtree('output2')
-    if os.path.exists('output3'):
-        shutil.rmtree('output3')
-    if os.path.exists('output1.zip'):
-        os.remove('output1.zip')
-    if os.path.exists('output2.zip'):
-        os.remove('output2.zip')
-    if os.path.exists('output3.zip'):
-        os.remove('output3.zip')
+#     # フォルダとzip削除
+#     if os.path.exists('output1'):
+#         shutil.rmtree('output1')
+#     if os.path.exists('output2'):
+#         shutil.rmtree('output2')
+#     if os.path.exists('output3'):
+#         shutil.rmtree('output3')
+#     if os.path.exists('output1.zip'):
+#         os.remove('output1.zip')
+#     if os.path.exists('output2.zip'):
+#         os.remove('output2.zip')
+#     if os.path.exists('output3.zip'):
+#         os.remove('output3.zip')
+
 
 
 # パターン1説明
@@ -45,186 +71,201 @@ st.write('パターン1：見た目の中心を取って配置します。')
 
 # パターン1
 if st.button('パターン1：ペット一括書き出し'):
-    # カウントダウン削除実行　https://ja.pymotw.com/2/threading/
-    thread = threading.Thread(target=delete_data)
-    thread.start()
-    
-    # output1フォルダがあったら削除
-    if os.path.exists('output1'):
-        shutil.rmtree('output1')
-    os.makedirs('output1')
-    
-    OUTPUT_PATH = os.getcwd()
-    OUTPUT_PATH = os.path.join(OUTPUT_PATH, 'output1')
+    with st.spinner("画像生成中です..."):
+        binary_dict.clear() # 初期化
 
-    # フォルダが存在しないときは作成
-    if not os.path.exists(OUTPUT_PATH):
-        os.makedirs(OUTPUT_PATH)
-    
-    # 作業階層のパスてすと
-    cd = os.getcwd()
-    # printでは出ない
-    st.write(f'保存先？: {cd}')
+        # カウントダウン削除実行　https://ja.pymotw.com/2/threading/
+        # thread = threading.Thread(target=delete_data)
+        # thread.start()
+        
+        # output1フォルダがあったら削除
+        # if os.path.exists('output1'):
+        #     shutil.rmtree('output1')
+        # os.makedirs('output1')
+        
+        # OUTPUT_PATH = os.getcwd()
+        # OUTPUT_PATH = os.path.join(OUTPUT_PATH, 'output1')
 
-    for export_file in export_files:
-        ####################################
+        # フォルダが存在しないときは作成
+        # if not os.path.exists(OUTPUT_PATH):
+        #     os.makedirs(OUTPUT_PATH)
+        
+        # 作業階層のパスてすと
+        # cd = os.getcwd()
+        # # printでは出ない
+        # st.write(f'保存先？: {cd}')
 
-        #　50 × 50、100×100　のリサイズ
+        for export_file in export_files:
+            ####################################
 
-        ####################################
-        image = Image.open(export_file)
+            #　50 × 50、100×100　のリサイズ
 
-        # 不要な透明部分削除
-        image = image.crop(image.getbbox())
+            ####################################
+            image = Image.open(export_file)
 
-        # メモ（のちほど）
-        width, height = image.size
-        if width < height:
-            if width > 100 and height / width > 1.7:
-                resized_image = image.resize((70, int(height * 70 / width)))
+            # 不要な透明部分削除
+            image = image.crop(image.getbbox())
+
+            # メモ（のちほど）
+            width, height = image.size
+            if width < height:
+                if width > 100 and height / width > 1.7:
+                    resized_image = image.resize((70, int(height * 70 / width)))
+                else:
+                    resized_image = image.resize((int(width * 100 / height), 100))
             else:
-                resized_image = image.resize((int(width * 100 / height), 100))
-        else:
-            if height > 100 and width / height > 1.7:
-                resized_image = image.resize((int(width * 70 / height), 70))
-            else:
-                resized_image = image.resize((100, int(height * 100 / width)))
+                if height > 100 and width / height > 1.7:
+                    resized_image = image.resize((int(width * 70 / height), 70))
+                else:
+                    resized_image = image.resize((100, int(height * 100 / width)))
 
-        image_np = np.array(resized_image)
-        alpha = image_np[:, :, 3]
-        cy, cx = ndimage.center_of_mass(alpha)
+            image_np = np.array(resized_image)
+            # st.image(image, caption = "croped_image") ###test
+            # st.image(resized_image, caption = "resized_image") ###test
+            # st.write(f"image_np.shape: {image_np.shape}") # image_np の形(dimention)確認用 ###test
+            # alpha = image_np[:, :, 3] # 圧縮 png は ndim(dimention)が２になるためエラーになる
+            alpha = np.array(resized_image.convert('L')) # 2 dimention の grayscale イメージ化して取る。変数名は alpha のままだけで、値は alpha ではなく、grayscale の 2次元 numpy array
+            cy, cx = ndimage.center_of_mass(alpha)
 
-        # 中心座標
-        center_x = int(cx)
-        center_y = int(cy)
+            # 中心座標
+            center_x = int(cx)
+            center_y = int(cy)
 
-        bottom_coord = center_y + 50
+            bottom_coord = center_y + 50
 
-        # 画像の不透明部分の最下部
-        image_y = np.max(np.nonzero(alpha)[0])
+            # 画像の不透明部分の最下部
+            image_y = np.max(np.nonzero(alpha)[0])
 
+            width, height = image.size
+            if not (width < height and width > 100 and height / width > 1.7) and not (height < width and height > 100 and width / height > 1.7):
+                # （center_y - 50）-　image_yの値により移動
+                if bottom_coord - image_y > 6:
+                    center_y -= (bottom_coord - image_y) - 6
+                elif bottom_coord - image_y < 6:
+                    center_y += 6 - (bottom_coord - image_y)
 
-        width, height = image.size
-        if not (width < height and width > 100 and height / width > 1.7) and not (height < width and height > 100 and width / height > 1.7):
-            # （center_y - 50）-　image_yの値により移動
-            if bottom_coord - image_y > 6:
-                center_y -= (bottom_coord - image_y) - 6
-            elif bottom_coord - image_y < 6:
-                center_y += 6 - (bottom_coord - image_y)
+            # 0.8縮小
+            resized_image = resized_image.resize((int(resized_image.width * 0.8), int(resized_image.height * 0.8)))
+            center_x = int(center_x * 0.8)
+            center_y = int(center_y * 0.8)
 
-        # 0.8縮小
-        resized_image = resized_image.resize((int(resized_image.width * 0.8), int(resized_image.height * 0.8)))
-        center_x = int(center_x * 0.8)
-        center_y = int(center_y * 0.8)
+            # 100×100
+            b_image = resized_image.crop((center_x - 50, center_y - 50, center_x + 50, center_y + 50))
 
-        # 100×100
-        b_image = resized_image.crop((center_x - 50, center_y - 50, center_x + 50, center_y + 50))
-
-        # 100 × 100保存
-        b_image.save(os.path.join(OUTPUT_PATH,'b.png'))
-
-        # 50 × 50保存
-        b_image = b_image.resize((50, 50))
-        b_image.save(os.path.join(OUTPUT_PATH,'a.png'))
-        
-        ####################################
-
-        #　640 × 640、320 ×　320　のリサイズ
-
-        ####################################
-
-        # 画像を読み込む
-        image = Image.open(export_file)
-
-        # 960×640
-        image = image.resize((960, 640))
-        image.save(os.path.join(OUTPUT_PATH,'e.png'))
+            # 100 × 100保存
+            # b_image.save(os.path.join(OUTPUT_PATH,'b.png'))
+            binary_dict["/100x100/" + export_file.name] = b_image
 
 
-        # 不要な透明部分削除
-        image = image.crop(image.getbbox())
+            # 50 × 50保存
+            b_image = b_image.resize((50, 50))
+            # b_image.save(os.path.join(OUTPUT_PATH,'a.png'))
+            binary_dict["/50x50/" + export_file.name] = b_image
 
-        image_np = np.array(image)
-        alpha = image_np[:, :, 3]
-        cy, cx = ndimage.center_of_mass(alpha)
-        center_x = int(cx)
-        center_y = int(cy)
+            ####################################
 
-        # 下の座標を取得
-        bottom_coord = center_y + 320
+            #　640 × 640、320 ×　320　のリサイズ
 
-        # 画像の不透明部分の最下部の座標を測定（変数image_yとする）
-        image_y = np.max(np.nonzero(alpha)[0])
+            ####################################
 
-        width, height = image.size
+            # 画像を読み込む
+            image = Image.open(export_file)
 
-       # （center_y - 50）-　image_yの値により移動
-        if bottom_coord - image_y > 15:
-            center_y -= (bottom_coord - image_y) - 15
-        elif bottom_coord - image_y < 15:
-            center_y += 15 - (bottom_coord - image_y)
+            # 960×640
+            image = image.resize((960, 640))
+            # image.save(os.path.join(OUTPUT_PATH,'e.png'))
+            binary_dict["/960x640/" + export_file.name] = image
 
-        # 640×640
-        left = center_x - 640 // 2
-        top = center_y - 640 // 2
-        right = left + 640
-        bottom = top + 640
-        d_image = image.crop((left, top, right, bottom))
 
-        # 320×320
-        c_image = d_image.resize((320, 320))
+            # 不要な透明部分削除
+            image = image.crop(image.getbbox())
 
-        c_image.save(os.path.join(OUTPUT_PATH,'c.png'))
-        d_image.save(os.path.join(OUTPUT_PATH,'d.png'))
-        
+            image_np = np.array(image)
+            # alpha = image_np[:, :, 3] # 圧縮 png は ndim(dimention)が２になるためエラーになる
+            alpha = np.array(image.convert('L')) # 2 dimention の grayscale イメージ化して取る。変数名は alpha のままだけで、値は alpha ではなく、grayscale の 2次元 numpy array
+            cy, cx = ndimage.center_of_mass(alpha)
 
-        ####################################
-        
-        # 書き出しフォルダを作成,移動
-        
-        ####################################
-        
+            center_x = int(cx)
+            center_y = int(cy)
 
-        dir_names = ["50x50", "100x100", "320x320", "640x640", "960x640"]
+            # 下の座標を取得
+            bottom_coord = center_y + 320
 
-        for dir_name in dir_names:
-            dir_path = os.path.join(OUTPUT_PATH, dir_name)
-            if not os.path.exists(dir_path):
-                os.makedirs(dir_path)
+            # 画像の不透明部分の最下部の座標を測定（変数image_yとする）
+            image_y = np.max(np.nonzero(alpha)[0])
 
-        # フォルダとファイルのパス
-        folder_paths = ['50x50', '100x100', '320x320', '640x640', '960x640']
-        file_paths = ['a.png', 'b.png', 'c.png', 'd.png', 'e.png']
+            width, height = image.size
 
-        # ファイルを移動する
-        for folder, file in zip(folder_paths, file_paths):
-            source_path = os.path.join(OUTPUT_PATH, file)
-            destination_path = os.path.join(OUTPUT_PATH, folder, file)
-            shutil.move(source_path, destination_path)
+        # （center_y - 50）-　image_yの値により移動
+            if bottom_coord - image_y > 15:
+                center_y -= (bottom_coord - image_y) - 15
+            elif bottom_coord - image_y < 15:
+                center_y += 15 - (bottom_coord - image_y)
 
+            # 640×640
+            left = center_x - 640 // 2
+            top = center_y - 640 // 2
+            right = left + 640
+            bottom = top + 640
+            d_image = image.crop((left, top, right, bottom))
+
+            # 320×320
+            c_image = d_image.resize((320, 320))
+
+            # c_image.save(os.path.join(OUTPUT_PATH,'c.png'))
+            # d_image.save(os.path.join(OUTPUT_PATH,'d.png'))
+            binary_dict["/320x320/" + export_file.name] = c_image
+            binary_dict["/640x640/" + export_file.name] = d_image
+
+
+            ####################################
             
-        ####################################
-        
-        # 元ファイル名にリネーム
-        
-        ####################################
-
-        # リネームするファイルとフォルダのパス
-        folder_paths = ['50x50', '100x100', '320x320', '640x640', '960x640']
-        file_names = ['a.png', 'b.png', 'c.png', 'd.png', 'e.png']
-
-        # 元ファイル名にリネーム
-        for folder, file in zip(folder_paths, file_names):
-            src = os.path.join(OUTPUT_PATH, folder, file)
-            dst = os.path.join(OUTPUT_PATH, folder, os.path.basename(export_file.name))
-            os.rename(src, dst)
+            # 書き出しフォルダを作成,移動
             
+            ####################################
 
-                    
-    st.markdown(f'<span style="color:red">書き出しが完了しました。フォルダ「output1」確認してください。</span>', unsafe_allow_html=True)
-    shutil.make_archive('output1', 'zip', 'output1')
-    st.download_button(label="output1.zipをダウンロード", data=open('output1.zip', 'rb'), file_name='output1.zip', mime='application/zip')
-    os.remove('output1.zip')
+            # dir_names = ["50x50", "100x100", "320x320", "640x640", "960x640"]
+
+            # for dir_name in dir_names:
+            #     dir_path = os.path.join(OUTPUT_PATH, dir_name)
+            #     if not os.path.exists(dir_path):
+            #         os.makedirs(dir_path)
+
+            # # フォルダとファイルのパス
+            # folder_paths = ['50x50', '100x100', '320x320', '640x640', '960x640']
+            # file_paths = ['a.png', 'b.png', 'c.png', 'd.png', 'e.png']
+
+            # # ファイルを移動する
+            # for folder, file in zip(folder_paths, file_paths):
+            #     source_path = os.path.join(OUTPUT_PATH, file)
+            #     destination_path = os.path.join(OUTPUT_PATH, folder, file)
+            #     shutil.move(source_path, destination_path)
+
+                
+            # ####################################
+            
+            # # 元ファイル名にリネーム
+            
+            # ####################################
+
+            # # リネームするファイルとフォルダのパス
+            # folder_paths = ['50x50', '100x100', '320x320', '640x640', '960x640']
+            # file_names = ['a.png', 'b.png', 'c.png', 'd.png', 'e.png']
+
+            # # 元ファイル名にリネーム
+            # for folder, file in zip(folder_paths, file_names):
+            #     src = os.path.join(OUTPUT_PATH, folder, file)
+            #     dst = os.path.join(OUTPUT_PATH, folder, os.path.basename(export_file.name))
+            #     os.rename(src, dst)
+                                    
+        # st.markdown(f'<span style="color:red">書き出しが完了しました。フォルダ「output1」確認してください。</span>', unsafe_allow_html=True)
+        # shutil.make_archive('output1', 'zip', 'output1')
+        # st.download_button(label="output1.zipをダウンロード", data=open('output1.zip', 'rb'), file_name='output1.zip', mime='application/zip')
+        # os.remove('output1.zip')
+        time.sleep(3)
+    st.markdown(f'<span style="color:red">書き出しが完了しました。下のボタンでダウンロードできます。</span>', unsafe_allow_html=True)
+    show_zip_download("output1.zip", binary_dict)
+
 
     
 st.markdown('<br>', unsafe_allow_html=True)
@@ -235,174 +276,186 @@ st.write('パターン2：パターン１と同じく見た目の中心を取っ
 
 # パターン2
 if st.button('パターン2：ペット一括書き出し'):
-    # output2フォルダがあったらそのフォルダを削除
-    if os.path.exists('output2'):
-        shutil.rmtree('output2')
-    os.makedirs('output2')
-    OUTPUT_PATH = os.getcwd()
-    OUTPUT_PATH = os.path.join(OUTPUT_PATH, 'output2')
+    with st.spinner("画像生成中です..."):
+        binary_dict.clear() # 初期化
 
-    # フォルダが存在しないときは作成
-    if not os.path.exists(OUTPUT_PATH):
-        os.makedirs(OUTPUT_PATH)
+        # output2フォルダがあったらそのフォルダを削除
+        # if os.path.exists('output2'):
+        #     shutil.rmtree('output2')
+        # os.makedirs('output2')
+        # OUTPUT_PATH = os.getcwd()
+        # OUTPUT_PATH = os.path.join(OUTPUT_PATH, 'output2')
 
-    for export_file in export_files:
-        ####################################
+        # フォルダが存在しないときは作成
+        # if not os.path.exists(OUTPUT_PATH):
+        #     os.makedirs(OUTPUT_PATH)
 
-        #　50 × 50、100×100　のリサイズ
+        for export_file in export_files:
+            ####################################
 
-        ####################################
-        image = Image.open(export_file)
+            #　50 × 50、100×100　のリサイズ
 
-        # 不要な透明部分削除
-        image = image.crop(image.getbbox())
+            ####################################
+            image = Image.open(export_file)
 
-        # メモ（のちほど）
-        width, height = image.size
-        if width < height:
-            if width > 100 and height / width > 1.7:
-                resized_image = image.resize((70, int(height * 70 / width)))
+            # 不要な透明部分削除
+            image = image.crop(image.getbbox())
+
+            # メモ（のちほど）
+            width, height = image.size
+            if width < height:
+                if width > 100 and height / width > 1.7:
+                    resized_image = image.resize((70, int(height * 70 / width)))
+                else:
+                    resized_image = image.resize((int(width * 100 / height), 100))
             else:
-                resized_image = image.resize((int(width * 100 / height), 100))
-        else:
-            if height > 100 and width / height > 1.7:
-                resized_image = image.resize((int(width * 70 / height), 70))
-            else:
-                resized_image = image.resize((100, int(height * 100 / width)))
+                if height > 100 and width / height > 1.7:
+                    resized_image = image.resize((int(width * 70 / height), 70))
+                else:
+                    resized_image = image.resize((100, int(height * 100 / width)))
 
-        image_np = np.array(resized_image)
-        alpha = image_np[:, :, 3]
-        cy, cx = ndimage.center_of_mass(alpha)
+            image_np = np.array(resized_image)
+            # alpha = image_np[:, :, 3] # 圧縮 png は ndim(dimention)が２になるためエラーになる
+            alpha = np.array(resized_image.convert('L')) # 2 dimention の grayscale イメージ化して取る。変数名は alpha のままだけで、値は alpha ではなく、grayscale の 2次元 numpy array
+            cy, cx = ndimage.center_of_mass(alpha)
 
-        # 中心座標
-        center_x = int(cx)
-        center_y = int(cy)
+            # 中心座標
+            center_x = int(cx)
+            center_y = int(cy)
 
-        bottom_coord = center_y + 50
+            bottom_coord = center_y + 50
 
-        # 画像の不透明部分の最下部
-        image_y = np.max(np.nonzero(alpha)[0])
+            # 画像の不透明部分の最下部
+            image_y = np.max(np.nonzero(alpha)[0])
 
-        width, height = image.size
-        if not (width < height and width > 100 and height / width > 1.7) and not (height < width and height > 100 and width / height > 1.7):
-             # （center_y - 50）-　image_yの値により移動
-            if bottom_coord - image_y > 18:
-                center_y -= (bottom_coord - image_y) - 18
-            elif bottom_coord - image_y < 18:
-                center_y += 18 - (bottom_coord - image_y)
+            width, height = image.size
+            if not (width < height and width > 100 and height / width > 1.7) and not (height < width and height > 100 and width / height > 1.7):
+                # （center_y - 50）-　image_yの値により移動
+                if bottom_coord - image_y > 18:
+                    center_y -= (bottom_coord - image_y) - 18
+                elif bottom_coord - image_y < 18:
+                    center_y += 18 - (bottom_coord - image_y)
 
-        # 0.8縮小
-        resized_image = resized_image.resize((int(resized_image.width * 0.8), int(resized_image.height * 0.8)))
-        center_x = int(center_x * 0.8)
-        center_y = int(center_y * 0.8)
+            # 0.8縮小
+            resized_image = resized_image.resize((int(resized_image.width * 0.8), int(resized_image.height * 0.8)))
+            center_x = int(center_x * 0.8)
+            center_y = int(center_y * 0.8)
 
-        #100×100保存
-        b_image = resized_image.crop((center_x - 50, center_y - 50, center_x + 50, center_y + 50))
-        b_image.save(os.path.join(OUTPUT_PATH,'b.png'))
+            #100×100保存
+            b_image = resized_image.crop((center_x - 50, center_y - 50, center_x + 50, center_y + 50))
+            # b_image.save(os.path.join(OUTPUT_PATH,'b.png'))
+            binary_dict["/100x100/" + export_file.name] = b_image
 
-        # 50×50保存
-        b_image = b_image.resize((50, 50))
-        b_image.save(os.path.join(OUTPUT_PATH,'a.png'))
-        
-        ####################################
-
-        #　640 × 640、320 ×　320　のリサイズ
-
-        ####################################
-
-
-        # 画像を読み込む
-        image = Image.open(export_file)
-
-        # 960×640
-        image = image.resize((960, 640))
-        image.save(os.path.join(OUTPUT_PATH,'e.png'))
-
-
-        # 不要な透明部分削除
-        image = image.crop(image.getbbox())
-        
-        image_np = np.array(image)
-        alpha = image_np[:, :, 3]
-        cy, cx = ndimage.center_of_mass(alpha)
-        center_x = int(cx)
-        center_y = int(cy)
-
-        bottom_coord = center_y + 320
-
-        # 画像の不透明部分の最下部の座標を測定（変数image_yとする）
-        image_y = np.max(np.nonzero(alpha)[0])
-
-        width, height = image.size
-        
-       # （center_y - 50）-　image_yの値により移動
-        if bottom_coord - image_y > 15:
-            center_y -= (bottom_coord - image_y) - 15
-        elif bottom_coord - image_y < 15:
-            center_y += 15 - (bottom_coord - image_y)
-
-        # 640×640
-        left = center_x - 640 // 2
-        top = center_y - 640 // 2
-        right = left + 640
-        bottom = top + 640
-        d_image = image.crop((left, top, right, bottom))
-
-        # 320×320
-        c_image = d_image.resize((320, 320))
-
-        c_image.save(os.path.join(OUTPUT_PATH,'c.png'))
-        d_image.save(os.path.join(OUTPUT_PATH,'d.png'))
-        
-
-        ####################################
-        
-        # 書き出しフォルダを作成,移動
-        
-        ####################################
-        
-        dir_names = ["50x50", "100x100", "320x320", "640x640", "960x640"]
-
-        for dir_name in dir_names:
-            dir_path = os.path.join(OUTPUT_PATH, dir_name)
-            if not os.path.exists(dir_path):
-                os.makedirs(dir_path)
-
-        # フォルダとファイルのパス
-        folder_paths = ['50x50', '100x100', '320x320', '640x640', '960x640']
-        file_paths = ['a.png', 'b.png', 'c.png', 'd.png', 'e.png']
-
-        # ファイルを移動する
-        for folder, file in zip(folder_paths, file_paths):
-            source_path = os.path.join(OUTPUT_PATH, file)
-            destination_path = os.path.join(OUTPUT_PATH, folder, file)
-            shutil.move(source_path, destination_path)
-
+            # 50×50保存
+            b_image = b_image.resize((50, 50))
+            # b_image.save(os.path.join(OUTPUT_PATH,'a.png'))
+            binary_dict["/50x50/" + export_file.name] = b_image
             
-        ####################################
-        
-        # 元ファイル名にリネーム
-        
-        ####################################
+            ####################################
 
-        # リネームするファイルとフォルダのパス
-        folder_paths = ['50x50', '100x100', '320x320', '640x640', '960x640']
-        file_names = ['a.png', 'b.png', 'c.png', 'd.png', 'e.png']
+            #　640 × 640、320 ×　320　のリサイズ
 
-        # 元ファイル名にリネーム
-        for folder, file in zip(folder_paths, file_names):
-            src = os.path.join(OUTPUT_PATH, folder, file)
-            dst = os.path.join(OUTPUT_PATH, folder, os.path.basename(export_file.name))
-            os.rename(src, dst)
-    
-    # 削除実行　AI生成
-    thread = threading.Thread(target=delete_data)
-    thread.start() 
-           
-    st.markdown(f'<span style="color:red">書き出しが完了しました。フォルダ「output2」を確認してください。</span>', unsafe_allow_html=True)
-    shutil.make_archive('output2', 'zip', 'output2')
-    st.download_button(label="output2.zipをダウンロード", data=open('output2.zip', 'rb'), file_name='output2.zip', mime='application/zip')
-    os.remove('output2.zip')
+            ####################################
+
+
+            # 画像を読み込む
+            image = Image.open(export_file)
+
+            # 960×640
+            image = image.resize((960, 640))
+            # image.save(os.path.join(OUTPUT_PATH,'e.png'))
+            binary_dict["/960x640/" + export_file.name] = image
+
+            # 不要な透明部分削除
+            image = image.crop(image.getbbox())
+            
+            image_np = np.array(image)
+            # alpha = image_np[:, :, 3] # 圧縮 png は ndim(dimention)が２になるためエラーになる
+            alpha = np.array(image.convert('L')) # 2 dimention の grayscale イメージ化して取る。変数名は alpha のままだけで、値は alpha ではなく、grayscale の 2次元 numpy array
+            cy, cx = ndimage.center_of_mass(alpha)
+            center_x = int(cx)
+            center_y = int(cy)
+
+            bottom_coord = center_y + 320
+
+            # 画像の不透明部分の最下部の座標を測定（変数image_yとする）
+            image_y = np.max(np.nonzero(alpha)[0])
+
+            width, height = image.size
+            
+        # （center_y - 50）-　image_yの値により移動
+            if bottom_coord - image_y > 15:
+                center_y -= (bottom_coord - image_y) - 15
+            elif bottom_coord - image_y < 15:
+                center_y += 15 - (bottom_coord - image_y)
+
+            # 640×640
+            left = center_x - 640 // 2
+            top = center_y - 640 // 2
+            right = left + 640
+            bottom = top + 640
+            d_image = image.crop((left, top, right, bottom))
+
+            # 320×320
+            c_image = d_image.resize((320, 320))
+
+            # c_image.save(os.path.join(OUTPUT_PATH,'c.png'))
+            # d_image.save(os.path.join(OUTPUT_PATH,'d.png'))
+            binary_dict["/320x320/" + export_file.name] = c_image
+            binary_dict["/640x640/" + export_file.name] = d_image
+            
+
+            ####################################
+            
+            # 書き出しフォルダを作成,移動
+            
+            ####################################
+
+            # dir_names = ["50x50", "100x100", "320x320", "640x640", "960x640"]
+
+            # for dir_name in dir_names:
+            #     dir_path = os.path.join(OUTPUT_PATH, dir_name)
+            #     if not os.path.exists(dir_path):
+            #         os.makedirs(dir_path)
+
+            # # フォルダとファイルのパス
+            # folder_paths = ['50x50', '100x100', '320x320', '640x640', '960x640']
+            # file_paths = ['a.png', 'b.png', 'c.png', 'd.png', 'e.png']
+
+            # # ファイルを移動する
+            # for folder, file in zip(folder_paths, file_paths):
+            #     source_path = os.path.join(OUTPUT_PATH, file)
+            #     destination_path = os.path.join(OUTPUT_PATH, folder, file)
+            #     shutil.move(source_path, destination_path)
+
+                
+            ####################################
+            
+            # 元ファイル名にリネーム
+            
+            ####################################
+
+            # リネームするファイルとフォルダのパス
+            # folder_paths = ['50x50', '100x100', '320x320', '640x640', '960x640']
+            # file_names = ['a.png', 'b.png', 'c.png', 'd.png', 'e.png']
+
+            # # 元ファイル名にリネーム
+            # for folder, file in zip(folder_paths, file_names):
+            #     src = os.path.join(OUTPUT_PATH, folder, file)
+            #     dst = os.path.join(OUTPUT_PATH, folder, os.path.basename(export_file.name))
+            #     os.rename(src, dst)
+        
+        # 削除実行　AI生成
+        # thread = threading.Thread(target=delete_data)
+        # thread.start() 
+            
+        # st.markdown(f'<span style="color:red">書き出しが完了しました。フォルダ「output2」を確認してください。</span>', unsafe_allow_html=True)
+        # shutil.make_archive('output2', 'zip', 'output2')
+        # st.download_button(label="output2.zipをダウンロード", data=open('output2.zip', 'rb'), file_name='output2.zip', mime='application/zip')
+        # os.remove('output2.zip')
+        time.sleep(3)
+    st.markdown(f'<span style="color:red">書き出しが完了しました。下のボタンでダウンロードできます。</span>', unsafe_allow_html=True)
+    show_zip_download("output2.zip", binary_dict)
 
 st.markdown('<br>', unsafe_allow_html=True)
 st.markdown('---')
@@ -415,156 +468,170 @@ scale = st.slider('数字を増やすほど拡大されます。', min_value=0.0
 
 # パターン3のボタンクリックで処理実行
 if st.button('パターン3：ペット一括書き出し'):
-    # output3フォルダが存在する場合、そのフォルダを削除
-    if os.path.exists('output3'):
-        shutil.rmtree('output3')
-    os.makedirs('output3')
+    with st.spinner("画像生成中です..."):
+        binary_dict.clear() # 初期化
 
-    OUTPUT_PATH = os.getcwd()
-    OUTPUT_PATH = os.path.join(OUTPUT_PATH, 'output3')
+        # output3フォルダが存在する場合、そのフォルダを削除
+        # if os.path.exists('output3'):
+        #     shutil.rmtree('output3')
+        # os.makedirs('output3')
 
-    # フォルダが存在しない時は作成
-    if not os.path.exists(OUTPUT_PATH):
-        os.makedirs(OUTPUT_PATH)
+        # OUTPUT_PATH = os.getcwd()
+        # OUTPUT_PATH = os.path.join(OUTPUT_PATH, 'output3')
 
-    for export_file in export_files:
-        ####################################
+        # フォルダが存在しない時は作成
+        # if not os.path.exists(OUTPUT_PATH):
+        #     os.makedirs(OUTPUT_PATH)
 
-        #　50 × 50、100×100　のリサイズ
+        for export_file in export_files:
+            ####################################
 
-        ####################################
-        image = Image.open(export_file)
-        image = image.crop(image.getbbox())
-        width, height = image.size
+            #　50 × 50、100×100　のリサイズ
 
-        # 短い辺を100に合わせるようにリサイズ
-        if width < height:
-            resized_image = image.resize((int(width * 100 / height), 100))
-        else:
-            resized_image = image.resize((100, int(height * 100 / width)))
+            ####################################
+            image = Image.open(export_file)
+            image = image.crop(image.getbbox())
+            width, height = image.size
 
-        # 画像をちょっと縮小　ユーザーが弄れる
-        resized_image = resized_image.resize((int(resized_image.width * scale), int(resized_image.height * scale)))
+            # 短い辺を100に合わせるようにリサイズ
+            if width < height:
+                resized_image = image.resize((int(width * 100 / height), 100))
+            else:
+                resized_image = image.resize((100, int(height * 100 / width)))
 
-
-       # 画像を中央に合わせて切り抜く
-        left = (resized_image.width - 100) // 2 + horizontal_shift
-        top = (resized_image.height - 100) // 2 + vertical_shift
-        right = left + 100
-        bottom = top + 100
-        b_image = resized_image.crop((left, top, right, bottom))
+            # 画像をちょっと縮小　ユーザーが弄れる
+            resized_image = resized_image.resize((int(resized_image.width * scale), int(resized_image.height * scale)))
 
 
-        # 100×100保存
-        b_image.save(os.path.join(OUTPUT_PATH,'b.png'))
+            # 画像を中央に合わせて切り抜く
+            left = (resized_image.width - 100) // 2 + horizontal_shift
+            top = (resized_image.height - 100) // 2 + vertical_shift
+            right = left + 100
+            bottom = top + 100
+            b_image = resized_image.crop((left, top, right, bottom))
 
-        # 50×50保存
-        b_image = b_image.resize((50, 50))
-        b_image.save(os.path.join(OUTPUT_PATH,'a.png'))
-        
-        # 画像のプレビューを表示
-        image = Image.open('output3/b.png')
-        image_with_border = ImageOps.expand(image, border=1, fill='red')
-        st.image(image_with_border, caption='100×100のプレビュー', use_column_width=False)
+
+            # 100×100保存
+            # b_image.save(os.path.join(OUTPUT_PATH,'b.png'))
+            binary_dict["/100x100/" + export_file.name] = b_image
+
+            # 50×50保存
+            b_image = b_image.resize((50, 50))
+            # b_image.save(os.path.join(OUTPUT_PATH,'a.png'))
+            binary_dict["/50x50/" + export_file.name] = b_image
+            
+            # 画像のプレビューを表示
+            # image = Image.open('output3/b.png')
+            # image_with_border = ImageOps.expand(image, border=1, fill='red')
+            # st.image(image_with_border, caption='100×100のプレビュー', use_column_width=False)
+
+            st.image(getPreviewImage(b_image), caption='100×100のプレビュー', use_column_width=False)
+
+                    
+            ####################################
+
+            #　640 × 640、320 ×　320　のリサイズ
+
+            ####################################
+
+            # 画像を読み込む
+            image = Image.open(export_file)
+
+            # 960×640保存
+            image = image.resize((960, 640))
+            # image.save(os.path.join(OUTPUT_PATH,'e.png'))
+            binary_dict["/960x640/" + export_file.name] = image
+
+            # 不要な透明部分削除
+            image = image.crop(image.getbbox())
+
+            image_np = np.array(image)
+            # alpha = image_np[:, :, 3] # 圧縮 png は ndim(dimention)が２になるためエラーになる
+            alpha = np.array(image.convert('L')) # 2 dimention の grayscale イメージ化して取る。変数名は alpha のままだけで、値は alpha ではなく、grayscale の 2次元 numpy array
+            cy, cx = ndimage.center_of_mass(alpha)
+            center_x = int(cx)
+            center_y = int(cy)
+
+            # 下の座標を取得
+            bottom_coord = center_y + 320
+
+            # 画像の不透明部分の最下部の座標を測定（変数image_yとする）
+            image_y = np.max(np.nonzero(alpha)[0])
+
+            width, height = image.size
+
+            # （center_y - 50）-　image_yの値により移動
+            if bottom_coord - image_y > 15:
+                center_y -= (bottom_coord - image_y) - 15
+            elif bottom_coord - image_y < 15:
+                center_y += 15 - (bottom_coord - image_y)
+
+            # 640×640
+            left = center_x - 640 // 2
+            top = center_y - 640 // 2
+            right = left + 640
+            bottom = top + 640
+            d_image = image.crop((left, top, right, bottom))
+
+            # 320×320
+            c_image = d_image.resize((320, 320))
+
+            # c_image.save(os.path.join(OUTPUT_PATH,'c.png'))
+            # d_image.save(os.path.join(OUTPUT_PATH,'d.png'))
+            binary_dict["/320x320/" + export_file.name] = c_image
+            binary_dict["/640x640/" + export_file.name] = d_image
+
+
+            ####################################
+            
+            # 書き出しフォルダを作成,移動
+            
+            ####################################
+
+            # フォルダ名を格納したリスト
+            # dir_names = ["50x50", "100x100", "320x320", "640x640", "960x640"]
+
+            # # フォルダがなければ作成
+            # for dir_name in dir_names:
+            #     dir_path = os.path.join(OUTPUT_PATH, dir_name)
+            #     if not os.path.exists(dir_path):
+            #         os.makedirs(dir_path)
+
+            # # フォルダとファイルのパス
+            # folder_paths = ['50x50', '100x100', '320x320', '640x640', '960x640']
+            # file_paths = ['a.png', 'b.png', 'c.png', 'd.png', 'e.png']
+
+            # # ファイルを移動する
+            # for folder, file in zip(folder_paths, file_paths):
+            #     source_path = os.path.join(OUTPUT_PATH, file)
+            #     destination_path = os.path.join(OUTPUT_PATH, folder, file)
+            #     shutil.move(source_path, destination_path)
 
                 
-        ####################################
-
-        #　640 × 640、320 ×　320　のリサイズ
-
-        ####################################
-
-        # 画像を読み込む
-        image = Image.open(export_file)
-
-        # 960×640保存
-        image = image.resize((960, 640))
-        image.save(os.path.join(OUTPUT_PATH,'e.png'))
-
-        # 不要な透明部分削除
-        image = image.crop(image.getbbox())
-
-        image_np = np.array(image)
-        alpha = image_np[:, :, 3]
-        cy, cx = ndimage.center_of_mass(alpha)
-        center_x = int(cx)
-        center_y = int(cy)
-
-        # 下の座標を取得
-        bottom_coord = center_y + 320
-
-        # 画像の不透明部分の最下部の座標を測定（変数image_yとする）
-        image_y = np.max(np.nonzero(alpha)[0])
-
-        width, height = image.size
-
-        # （center_y - 50）-　image_yの値により移動
-        if bottom_coord - image_y > 15:
-            center_y -= (bottom_coord - image_y) - 15
-        elif bottom_coord - image_y < 15:
-            center_y += 15 - (bottom_coord - image_y)
-
-        # 640×640
-        left = center_x - 640 // 2
-        top = center_y - 640 // 2
-        right = left + 640
-        bottom = top + 640
-        d_image = image.crop((left, top, right, bottom))
-
-        # 320×320
-        c_image = d_image.resize((320, 320))
-
-        c_image.save(os.path.join(OUTPUT_PATH,'c.png'))
-        d_image.save(os.path.join(OUTPUT_PATH,'d.png'))
-        
-
-        ####################################
-        
-        # 書き出しフォルダを作成,移動
-        
-        ####################################
-        
-        # フォルダ名を格納したリスト
-        dir_names = ["50x50", "100x100", "320x320", "640x640", "960x640"]
-
-        # フォルダがなければ作成
-        for dir_name in dir_names:
-            dir_path = os.path.join(OUTPUT_PATH, dir_name)
-            if not os.path.exists(dir_path):
-                os.makedirs(dir_path)
-
-        # フォルダとファイルのパス
-        folder_paths = ['50x50', '100x100', '320x320', '640x640', '960x640']
-        file_paths = ['a.png', 'b.png', 'c.png', 'd.png', 'e.png']
-
-        # ファイルを移動する
-        for folder, file in zip(folder_paths, file_paths):
-            source_path = os.path.join(OUTPUT_PATH, file)
-            destination_path = os.path.join(OUTPUT_PATH, folder, file)
-            shutil.move(source_path, destination_path)
-
+            ####################################
             
-        ####################################
-        
-        # 元ファイル名にリネーム
-        
-        ####################################
+            # 元ファイル名にリネーム
+            
+            ####################################
 
-        # リネームするファイルとフォルダのパス
-        folder_paths = ['50x50', '100x100', '320x320', '640x640', '960x640']
-        file_names = ['a.png', 'b.png', 'c.png', 'd.png', 'e.png']
+            # # リネームするファイルとフォルダのパス
+            # folder_paths = ['50x50', '100x100', '320x320', '640x640', '960x640']
+            # file_names = ['a.png', 'b.png', 'c.png', 'd.png', 'e.png']
 
-        # 元ファイル名にリネーム
-        for folder, file in zip(folder_paths, file_names):
-            src = os.path.join(OUTPUT_PATH, folder, file)
-            dst = os.path.join(OUTPUT_PATH, folder, os.path.basename(export_file.name))
-            os.rename(src, dst)
-          
-    # 削除実行　AI生成　
-    thread = threading.Thread(target=delete_data)
-    thread.start()       
-    
-    st.markdown(f'<span style="color:red">書き出しが完了しました。フォルダ「output3」を確認してください。</span>', unsafe_allow_html=True)
-    shutil.make_archive('output3', 'zip', 'output3')
-    st.download_button(label="output3.zipをダウンロード", data=open('output3.zip', 'rb'), file_name='output3.zip', mime='application/zip')
-    os.remove('output3.zip')
+            # # 元ファイル名にリネーム
+            # for folder, file in zip(folder_paths, file_names):
+            #     src = os.path.join(OUTPUT_PATH, folder, file)
+            #     dst = os.path.join(OUTPUT_PATH, folder, os.path.basename(export_file.name))
+            #     os.rename(src, dst)
+            
+        # 削除実行　AI生成　
+        # thread = threading.Thread(target=delete_data)
+        # thread.start()       
+        
+        # st.markdown(f'<span style="color:red">書き出しが完了しました。フォルダ「output3」を確認してください。</span>', unsafe_allow_html=True)
+        # shutil.make_archive('output3', 'zip', 'output3')
+        # st.download_button(label="output3.zipをダウンロード", data=open('output3.zip', 'rb'), file_name='output3.zip', mime='application/zip')
+        # os.remove('output3.zip')
+        time.sleep(3)
+    st.markdown(f'<span style="color:red">書き出しが完了しました。下のボタンでダウンロードできます。</span>', unsafe_allow_html=True)
+    show_zip_download("output3.zip", binary_dict)
