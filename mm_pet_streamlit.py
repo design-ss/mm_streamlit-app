@@ -352,9 +352,9 @@ if preview_button1:
                     center_y += 6 - (bottom_coord - image_y)
 
             # 0.8縮小
-            resized_image = resized_image.resize((int(resized_image.width * 0.8), int(resized_image.height * 0.8)))
-            center_x = int(center_x * 0.8)
-            center_y = int(center_y * 0.8)
+            resized_image = resized_image.resize((int(resized_image.width * 0.7), int(resized_image.height * 0.7)))
+            center_x = int(center_x * 0.7)
+            center_y = int(center_y * 0.7)
 
             # 100×100
             b_image = resized_image.crop((center_x - 50, center_y - 50, center_x + 50, center_y + 50))
@@ -414,6 +414,3 @@ if horizontal_shift or vertical_shift or scale != 0.7 or preview_button2:
 
             # プレビュー画像を表示する　位置と画像　余りの数で配置分け
             cols[i % 4].image(getPreviewImage(b_image), use_column_width=False)
-
-
-            
