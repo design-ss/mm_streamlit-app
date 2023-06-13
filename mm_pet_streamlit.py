@@ -301,7 +301,7 @@ if preview_button1:
         with st.spinner("画像生成中です..."):
          binary_dict.clear() # 初期化
         # 全部プレビュー　enumerate関数リスト型変数から要素を一つずつ取り出し、要素の位置と要素をタプル型変数として返す
-    cols = st.columns(3)
+    cols = st.columns(4)
     for i, export_file in enumerate(export_files):
             ####################################
 
@@ -365,7 +365,7 @@ if preview_button1:
             draw.line((0, 50, 100, 50), fill="red", width=1)
 
             # プレビュー画像を表示する　位置と画像　余りの数で配置分け
-            cols[i % 3].image(getPreviewImage(b_image), caption='100×100のプレビュー', use_column_width=False)
+            cols[i % 4].image(getPreviewImage(b_image), use_column_width=False)
 
 
 # パターン2のプレビュー処理
@@ -378,7 +378,7 @@ if horizontal_shift or vertical_shift or scale != 0.7 or preview_button2:
             binary_dict.clear() # 初期化
 
             # 全部プレビュー、enumerate関数リスト型変数から要素を一つずつ取り出し、要素の位置と要素をタプル型変数として返す
-    cols = st.columns(3)
+    cols = st.columns(4)
     for i, export_file in enumerate(export_files):
 
             ####################################
@@ -412,7 +412,8 @@ if horizontal_shift or vertical_shift or scale != 0.7 or preview_button2:
             draw.line((50, 0, 50, 100), fill="red", width=1)
             draw.line((0, 50, 100, 50), fill="red", width=1)
 
-            # プレビュー画像を表示する 位置と画像　余りの数で配置分け
-            cols[i % 3].image(getPreviewImage(b_image), caption='100×100のプレビュー', use_column_width=False)
+            # プレビュー画像を表示する　位置と画像　余りの数で配置分け
+            cols[i % 4].image(getPreviewImage(b_image), use_column_width=False)
+
 
             
