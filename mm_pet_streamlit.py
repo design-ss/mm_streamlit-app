@@ -44,7 +44,7 @@ export_files = st.file_uploader("ファイルを選択", type='png', accept_mult
 st.write('100/50の見た目の中心を取って配置します。スライダーで微調整できます。')
 
 # パラメータ調整スライダー
-vertical_shift = st.slider('上移動⇔下移動', min_value=-30, max_value=30, value=0)
+vertical_shift = st.slider('下移動⇔上移動', min_value=-30, max_value=30, value=0)
 horizontal_shift = st.slider('左移動⇔右移動', min_value=-30, max_value=30, value=0)
 scale = st.slider('縮小⇔拡大', min_value=0.0, max_value=2.0, value=0.7)
 
@@ -100,7 +100,7 @@ with export_button1:
                 width, height = image.size
                 if not (width < height and width > 100 and height / width > 1.7) and not (height < width and height > 100 and width / height > 1.7):
                     center_y += vertical_shift
-                    center_x += horizontal_shift
+                    center_x += -horizontal_shift
 
                 # 100×100
                 b_image = resized_image.crop((center_x - 50, center_y - 50, center_x + 50, center_y + 50))
@@ -339,7 +339,7 @@ if vertical_shift or scale != 0.7 or preview_button1:
                 width, height = image.size
                 if not (width < height and width > 100 and height / width > 1.7) and not (height < width and height > 100 and width / height > 1.7):
                     center_y += vertical_shift
-                    center_x += horizontal_shift
+                    center_x += -horizontal_shift
 
                 # 100×100
                 b_image = resized_image.crop((center_x - 50, center_y - 50, center_x + 50, center_y + 50))
