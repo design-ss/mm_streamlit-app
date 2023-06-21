@@ -47,7 +47,7 @@ st.write('100/50の見た目の中心を取って配置します。スライダ�
 # パラメータ調整スライダー
 vertical_shift = st.slider('下移動⇔上移動', min_value=-30, max_value=30, value=0)
 horizontal_shift = st.slider('左移動⇔右移動', min_value=-30, max_value=30, value=0)
-scale = st.slider('縮小⇔拡大', min_value=0.0, max_value=2.0, value=0.7)
+scale = st.slider('縮小⇔拡大(標準サイズ=0.7)', min_value=0.0, max_value=2.0, value=0.7)
 
 
 
