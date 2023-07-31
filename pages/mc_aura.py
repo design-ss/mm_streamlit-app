@@ -35,13 +35,15 @@ st.set_page_config(page_title='mcオーラ書き出し')
 
 st.title('mcオーラ書き出し')
 
+
+
 # オーラ前ファイル指定
 export_files_top = st.file_uploader("オーラ前ファイルを選択", type='png', accept_multiple_files=True, key="export_files_top")
 
 # オーラ後ろファイル指定
 export_files_bottom = st.file_uploader("オーラ後ろファイルを選択", type='png', accept_multiple_files=True, key="export_files_bottom")
 
-
+st.write('属性画像はローカルからアップロードお願いします。トレロに全属性画像のフォルダを記載してます。')
 # 属性ファイル
 attribution_file = st.file_uploader("属性を選択", type='png', accept_multiple_files=False, key="attribution_file")
 
