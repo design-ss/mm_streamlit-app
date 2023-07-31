@@ -38,6 +38,7 @@ st.title('mcペット書き出し')
 # 書き出しファイル
 export_files = st.file_uploader("ファイルを選択", type='png', accept_multiple_files=True, key="export_files")
 
+st.write('属性画像はローカルからアップロードお願いします。トレロに全属性画像のフォルダを記載してます。')
 # 属性ファイル
 attribution_file = st.file_uploader("属性を選択", type='png', accept_multiple_files=False, key="attribution_file")
 
