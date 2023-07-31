@@ -115,7 +115,7 @@ with export_button1:
                 resized_224 = guild_image.resize((112, 272))
                 binary_dict["/frame/guild_frame/112x272/" + GUILD.name] = resized_224
                 
-                 ####################################
+                ####################################
 
                 #　640 × 640、320 ×　320　のリサイズ
 
@@ -125,20 +125,21 @@ with export_button1:
                 image = icon_image.resize((300, 300))
 
                 # 透明画像を作っておく
-                blank_image = Image.new('RGBA', (640, 640), (0, 0, 0, 0))
+                blank_image_640 = Image.new('RGBA', (640, 640), (0, 0, 0, 0))
 
                 # 元の画像を貼り付け
-                left = (blank_image.width - image.width) // 2
-                top = int((blank_image.height - image.height) * 0.8)
-                blank_image.paste(image, (left, top))
-                resized_640 = blank_image
-              
+                left = (blank_image_640.width - image.width) // 2
+                top = int((blank_image_640.height - image.height) * 0.8)
+                blank_image_640.paste(image, (left, top))
+                resized_640 = blank_image_640
+
                 # 320リサイズ
-                resized_320 = blank_image.resize((320, 320))
+                resized_320 = resized_640.resize((320, 320))  # resizing the 640x640 image to 320x320
 
                 # 統合した画像の保存
                 binary_dict["/frame/guild_frame/320x320/" + GUILD.name] = resized_320
                 binary_dict["/frame/guild_frame/640x640/" + GUILD.name] = resized_640
+
                     
             time.sleep(3)
         st.markdown(f'<span style="color:red">書き出しが完了しました。ダウンロードボタンが表示されるまでお待ちください。</span>', unsafe_allow_html=True)
