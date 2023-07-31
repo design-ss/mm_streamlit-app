@@ -122,7 +122,7 @@ with export_button1:
                 ####################################
 
                 # 300 × 300 にリサイズしておく
-                image = image.resize((300, 300))
+                image = icon_image.resize((300, 300))
 
                 # 透明画像を作っておく
                 blank_image = Image.new('RGBA', (640, 640), (0, 0, 0, 0))
