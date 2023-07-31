@@ -120,6 +120,9 @@ with export_button1:
                 #　640 × 640、320 ×　320　のリサイズ
 
                 ####################################
+                
+                # 画像ファイルを開く
+                icon_image = Image.open(ICON)
 
                 # 300 × 300 にリサイズしておく
                 image = icon_image.resize((300, 300))
