@@ -22,9 +22,9 @@ def show_zip_download(file_name, target_dict):
         buffer.seek(0)
         st.download_button(label=file_name + "をダウンロード", data=buffer, file_name=file_name, mime='application/zip')
 
-st.set_page_config(page_title='mcフレーム書き出し')
+st.set_page_config(page_title='mmフレーム書き出し')
 
-st.title('mcフレーム書き出し')
+st.title('mmフレーム書き出し')
 
 st.write('複数のファイルを同時に書き出しする時は、選択順に気を付けてください。\n\n（例）\n\n【アイコン1、アイコン2、アイコン3】と選んだときは\n\n【ギルド1、ギルド2、ギルド3】と対応するフレームを同じ順で選択してください。')
 
