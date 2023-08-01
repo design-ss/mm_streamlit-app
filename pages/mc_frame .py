@@ -147,7 +147,6 @@ with export_button1:
             time.sleep(3)
         st.markdown(f'<span style="color:red">書き出しが完了しました。ダウンロードボタンが表示されるまでお待ちください。</span>', unsafe_allow_html=True)
         show_zip_download("mc_frame.zip", binary_dict)
-    st.write('チェックを入れたファイルを書き出します。')
 st.markdown('---')
 
 
