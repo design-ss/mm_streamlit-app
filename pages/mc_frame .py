@@ -114,6 +114,32 @@ with export_button1:
                 # ギルドフレームを保存
                 resized_224 = guild_image.resize((112, 272))
                 binary_dict["/frame/guild_frame/112x272/" + GUILD.name] = resized_224
+                
+                
+                ####################################
+
+                #　640 × 640、320 ×　320　のリサイズ
+
+                ####################################
+
+                # 300 × 300 にリサイズしておく
+                resized_300 = icon_image.resize((300, 300))
+
+                # 透明画像を作っておく
+                blank_image = Image.new('RGBA', (640, 640), (0, 0, 0, 0))
+
+                # 元の画像を貼り付け
+                left = (blank_image.width - resized_300.width) // 2
+                top = int((blank_image.height - resized_300.height) * 0.8)
+                blank_image.paste(resized_300, (left, top))
+                resized_640 = blank_image
+              
+                # 320リサイズ
+                resized_320 = blank_image.resize((320, 320))
+
+                # 統合した画像の保存
+                binary_dict["/frame/guild_frame/320x320/" + GUILD.name] = resized_320
+                binary_dict["/frame/guild_frame/640x640/" + GUILD.name] = resized_640
 
                     
             time.sleep(3)
