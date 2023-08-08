@@ -67,7 +67,7 @@ with export_button1:
     if st.button('一括書き出し'):
         with st.spinner("画像生成中です..."):
             binary_dict.clear() # 初期化
-             # 前ファイルと後ろファイルを結合
+             # 前ファイルと後ろファイル　
             if not export_files_top:
                 export_files_top = [None] * len(export_files_bottom)
             if not export_files_bottom:
@@ -285,11 +285,11 @@ with st.spinner("プレビュー画像生成中です..."):
         cols[i % 4].image(getPreviewImage(b_image), use_column_width=False)
         # チェックボックス
         
-         # 名前長いのは省略
-        if len(file_name) > 6:
-            file_name = file_name[:6] + "..."
-        if cols[i % 4].checkbox(file_name, key=f"select_{file_name}"):
-            selected_files.append((export_file_top, export_file_bottom))
+        #  # 名前長いのは省略　省略前部分が同じだとエラーが出てややこしいので一旦コメントアウト
+        # if len(file_name) > 6:
+        #     file_name = file_name[:6] + "..."
+        # if cols[i % 4].checkbox(file_name, key=f"select_{file_name}"):
+        #     selected_files.append((export_file_top, export_file_bottom))
 
 
 
