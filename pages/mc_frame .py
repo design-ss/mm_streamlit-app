@@ -33,6 +33,11 @@ export_files_iconframe = st.file_uploader("アイコンフレームファイル�
 # ギルドフレームファイル指定
 export_files_guildframe = st.file_uploader("ギルドフレームファイルを選択", type='png', accept_multiple_files=True, key="export_files_guildframe")
 
+# ファイル名を昇順に並び替える
+export_files_iconframe = sorted(export_files_iconframe, key=lambda x: x.name)
+export_files_guildframe = sorted(export_files_guildframe, key=lambda x: x.name)
+
+
 # 一括書き出しと個別書き出し
 export_button1, export_selected_button1 = st.columns(2)
 
