@@ -271,6 +271,8 @@ with export_button1:
                     padding = (pad_width_left, pad_height, pad_width_right, up)
                     d_image = ImageOps.expand(image, padding)
                     
+                    d_image = d_image.resize((640, 640))
+                    
                     # 320×320を生成
                     c_image = d_image.resize((320, 320))
                     
@@ -564,6 +566,8 @@ with export_selected_button1:
                     pad_height = 640 - height - up
                     padding = (pad_width_left, pad_height, pad_width_right, up)
                     d_image = ImageOps.expand(image, padding)
+                    
+                    d_image = d_image.resize((640, 640))
                     
                     # 320×320を生成
                     c_image = d_image.resize((320, 320))
