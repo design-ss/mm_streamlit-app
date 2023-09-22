@@ -64,7 +64,8 @@ col4 , col5 = st.columns(2)
 
 with col4:
     # 属性ファイル
-    st.write('**属性**<br><br><br><br>', unsafe_allow_html=True)
+    st.write('**属性**<span style="color:red; font-size: 80%;">　※必須</span>', unsafe_allow_html=True)
+    st.write('<span style="font-size: 80%;">属性画像はローカルからアップロードお願いします。トレロに全属性画像のフォルダを記載してます。</span>', unsafe_allow_html=True)
     attribution_file = st.file_uploader("選択", type='png', accept_multiple_files=False, key="attribution_file")
     # ファイルが選択されていない場合はメッセージを表示する
     if not attribution_file:
