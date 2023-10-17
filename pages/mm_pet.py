@@ -38,11 +38,9 @@ st.title('mmペット書き出し')
 # ファイルアップローダー
 export_files = st.file_uploader("ファイルを選択", type='png', accept_multiple_files=True, key="export_files")
 
-# パターン1説明
-st.write('100/50の見た目の中心を取って配置します。スライダーで調整できます。')
-
 
 # パラメータ調整スライダー
+st.write('**50/100調整用** 　　320/640で調整が必要な場合はpsdでの書き出しで対応してください。', unsafe_allow_html=True)
 vertical_shift = st.slider('下移動⇔上移動', min_value=-30, max_value=30, value=0)
 horizontal_shift = st.slider('左移動⇔右移動', min_value=-30, max_value=30, value=0)
 scale = st.slider('縮小⇔拡大', min_value=0.0, max_value=2.0, value=0.7)
@@ -175,80 +173,80 @@ st.markdown('---')
 
 # パターン1
 # パターン1のプレビュー処理
-if vertical_shift or horizontal_shift or scale  or preview_button1:
-        with st.spinner("プレビュー画像生成中です..."):
-            binary_dict.clear() # 初期化
-            # 全部プレビュー　enumerate関数リスト型変数から要素を一つずつ取り出し、要素の位置と要素をタプル型変数として返す
-            # プレビュー画像にチェックボックスを付ける　個別書き出し用の空のリスト作る
-            selected_files = []
-            cols = st.columns(4)
-            for i, export_file in enumerate(export_files):
-                ####################################
+# if vertical_shift or horizontal_shift or scale  or preview_button1:
+with st.spinner("プレビュー画像生成中です..."):
+    binary_dict.clear() # 初期化
+    # 全部プレビュー　enumerate関数リスト型変数から要素を一つずつ取り出し、要素の位置と要素をタプル型変数として返す
+    # プレビュー画像にチェックボックスを付ける　個別書き出し用の空のリスト作る
+    selected_files = []
+    cols = st.columns(4)
+    for i, export_file in enumerate(export_files):
+        ####################################
 
-                #　50 × 50、100×100　のリサイズ
+        #　50 × 50、100×100　のリサイズ
 
-                ####################################
-                image = Image.open(export_file)
+        ####################################
+        image = Image.open(export_file)
 
-                # 不要な透明部分削除
-                image = image.crop(image.getbbox())
+        # 不要な透明部分削除
+        image = image.crop(image.getbbox())
 
-                # メモ（のちほど）
-                width, height = image.size
-                if width < height:
-                    if width > 100 and height / width > 1.7:
-                        resized_image = image.resize((70, int(height * 70 / width)))
-                    else:
-                        resized_image = image.resize((int(width * 100 / height), 100))
-                else:
-                    if height > 100 and width / height > 1.7:
-                        resized_image = image.resize((int(width * 70 / height), 70))
-                    else:
-                        resized_image = image.resize((100, int(height * 100 / width)))
+        # メモ（のちほど）
+        width, height = image.size
+        if width < height:
+            if width > 100 and height / width > 1.7:
+                resized_image = image.resize((70, int(height * 70 / width)))
+            else:
+                resized_image = image.resize((int(width * 100 / height), 100))
+        else:
+            if height > 100 and width / height > 1.7:
+                resized_image = image.resize((int(width * 70 / height), 70))
+            else:
+                resized_image = image.resize((100, int(height * 100 / width)))
 
-                # スケール変更
-                resized_image = resized_image.resize((int(resized_image.width * scale), int(resized_image.height * scale)))
+        # スケール変更
+        resized_image = resized_image.resize((int(resized_image.width * scale), int(resized_image.height * scale)))
 
-                image_np = np.array(resized_image)
-                alpha = np.array(resized_image.convert('L'))
-                cy, cx = ndimage.center_of_mass(alpha)
+        image_np = np.array(resized_image)
+        alpha = np.array(resized_image.convert('L'))
+        cy, cx = ndimage.center_of_mass(alpha)
 
-                # 中心座標
-                center_x = int(cx)
-                center_y = int(cy)
+        # 中心座標
+        center_x = int(cx)
+        center_y = int(cy)
 
-                # 画像の不透明部分の最下部
-                image_y = np.max(np.nonzero(alpha)[0])
-                image_x = np.max(np.nonzero(alpha)[0])
+        # 画像の不透明部分の最下部
+        image_y = np.max(np.nonzero(alpha)[0])
+        image_x = np.max(np.nonzero(alpha)[0])
 
-                width, height = image.size
-                if not (width < height and width > 100 and height / width > 1.7) and not (height < width and height > 100 and width / height > 1.7):
-                    center_y += vertical_shift
-                    center_x += -horizontal_shift
+        width, height = image.size
+        if not (width < height and width > 100 and height / width > 1.7) and not (height < width and height > 100 and width / height > 1.7):
+            center_y += vertical_shift
+            center_x += -horizontal_shift
 
-                # 100×100
-                b_image = resized_image.crop((center_x - 50, center_y - 50, center_x + 50, center_y + 50))
+        # 100×100
+        b_image = resized_image.crop((center_x - 50, center_y - 50, center_x + 50, center_y + 50))
 
-                # サンプルフレームを読み込む
-                flame_image = Image.open("./data/100_flame.png")
+        # 背景を読み込む
+        flame_image = Image.open("./data/100_flame.png")
 
-                # b_imageとサンプルフレームを統合する
-                b_image.paste(flame_image, (0, 0), flame_image)
+        # b_imageとサンプルフレームを統合する
+        b_image.paste(flame_image, (0, 0), flame_image)
 
-                # 中心線を描画する
-                draw = ImageDraw.Draw(b_image)
-                draw.line((50, 0, 50, 100), fill="red", width=1)
-                draw.line((0, 50, 100, 50), fill="red", width=1)
+        # 中心線を描画する
+        draw = ImageDraw.Draw(b_image)
+        draw.line((50, 0, 50, 100), fill="red", width=1)
+        draw.line((0, 50, 100, 50), fill="red", width=1)
 
-                # プレビュー画像を表示する
-                cols[i % 4].image(getPreviewImage(b_image), use_column_width=False)
-                # チェックボックス
-                file_name = export_file.name
-                # 名前長いのは省略
-                if len(file_name) > 6:
-                    file_name = file_name[:6] + "..."
-                if cols[i % 4].checkbox(file_name, key=f"select_{export_file.name}"):
-                    selected_files.append(export_file)
+        # プレビュー画像を表示する
+        cols[i % 4].image(getPreviewImage(b_image), use_column_width=False)
+        # チェックボックス
+        file_name = export_file.name
+        # 名前長いのは省略
+        if len(file_name) > 6:
+            file_name = file_name[:6] + "..."
+        if cols[i % 4].checkbox(file_name, key=f"select_{export_file.name}"):
+            selected_files.append(export_file)
 
 
 

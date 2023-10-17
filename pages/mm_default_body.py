@@ -69,7 +69,8 @@ default_body_dict = {default_body.name: default_body for default_body in default
 
     
 st.markdown('---')
-st.write('**50/100調整用** 　　<span style="color:red;">特殊な形状の時以外は調整不要です！</span>', unsafe_allow_html=True)
+st.write('**50/100調整用** 　　320/640で調整が必要な場合はpsdでの書き出しで対応してください。', unsafe_allow_html=True)
+st.write('<span style="color:red;">特殊な形状の時以外は調整不要です！</span>', unsafe_allow_html=True)
 # パラメータ調整スライダー 
 vertical_shift = st.slider('下移動⇔上移動', min_value=-100, max_value=100, value=0)
 horizontal_shift = st.slider('左移動⇔右移動', min_value=-100, max_value=100, value=0)
