@@ -194,7 +194,7 @@ st.title('mc見た目体書き出し')
 
 # st.write('**ID付与前に複数構造のものを書き出す場合はお気をつけください。** <p style="font-size: 80%;"></p>', unsafe_allow_html=True)
 st.write('**「前後ありオーラ」「前のみ」「後ろのみ」の3種類を一気に処理はできません。** <p style="font-size: 80%;">アプリをリロードしてそれぞれ書き出してください。<br><br><br></p>', unsafe_allow_html=True)
-
+st.write('<span style="color:red;">※未圧縮データを使ってください！</span>', unsafe_allow_html=True)
 col1, col2 , col3 = st.columns(3)
 
 # 前ファイル指定
