@@ -134,7 +134,7 @@ def generate_large_images(export_file_front, export_file_back):
 
 st.set_page_config(page_title='mcオーラ書き出し')
 st.title('mcオーラ書き出し')
-
+st.write('<span style="color:red;">※未圧縮データを使ってください！</span>', unsafe_allow_html=True)
 # オーラ前ファイル指定
 export_files_front = st.file_uploader("**オーラ前**", type='png', accept_multiple_files=True, key="export_files_front")
 
@@ -198,9 +198,10 @@ with export_button1:
                 ####################################
                 d_image, file_name = generate_large_images(export_file_front, export_file_back)
 
-                # 統合した画像の保存（
+                # 640 × 640保存
                 binary_dict["/640x640/" + file_name] = d_image
-      
+
+                # 320 × 320保存
                 c_image = d_image.resize((320, 320))
                 binary_dict["/320x320/" + file_name] = c_image
 
@@ -258,10 +259,11 @@ with export_selected_button1:
             export_files = list(zip(export_files_front, export_files_back))
 
             for export_file_front, export_file_back in selected_files:
-                b_image, file_name = generate_small_images(export_file_front, export_file_back, attribution_file)
+                
                 ####################################
                 #　100 × 100、50 ×　50　のリサイズ
                 ####################################
+                b_image, file_name = generate_small_images(export_file_front, export_file_back, attribution_file)
                 # 100 × 100保存
                 binary_dict["/100x100/" + file_name] = b_image
 
