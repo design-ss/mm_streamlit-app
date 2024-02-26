@@ -34,7 +34,7 @@ def getPreviewImage(image, border_size = 1, border_color='red'):
 st.set_page_config(page_title='mmペット書き出し')
 
 st.title('mmペット書き出し')
-
+st.write('<span style="color:red;">※未圧縮データを使ってください！</span>', unsafe_allow_html=True)
 # ファイルアップローダー
 export_files = st.file_uploader("ファイルを選択", type='png', accept_multiple_files=True, key="export_files")
 
