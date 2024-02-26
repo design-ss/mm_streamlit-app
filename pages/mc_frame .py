@@ -26,7 +26,7 @@ st.set_page_config(page_title='mcフレーム書き出し')
 
 st.title('mcフレーム書き出し')
 st.write('**ID付与前に「複数枚同時に」書き出す場合はお気をつけください。** <p style="font-size: 80%;">ファイルは選択順に関係なく「名前の昇順」でアップされます。<br> そのため、適切にフレームを組み合わせるために、ファイル名の先頭に3桁の数字を付けるなどで順番を制御してください。<br>（例）<br>アイコンフレーム：「001.男_アイコンフレーム」「002.女_アイコンフレーム」<br>ギルドフレーム：「003.男_ギルドフレーム」「004.女_ギルドフレーム」<br> とそれぞれ対応するフレームの順番が正しくなるように数字を付けてください。</p>', unsafe_allow_html=True)
-
+st.write('<span style="color:red;">※未圧縮データを使ってください！</span>', unsafe_allow_html=True)
 # アイコンフレームファイル指定
 export_files_iconframe = st.file_uploader("アイコンフレームファイルを選択", type='png', accept_multiple_files=True, key="export_files_iconframe")
 
