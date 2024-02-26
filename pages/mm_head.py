@@ -35,7 +35,7 @@ def getPreviewImage(image, border_size = 1, border_color='red'):
 st.set_page_config(page_title='mm頭・髪書き出し')
 
 st.title('mm頭・髪書き出し')
-
+st.write('<span style="color:red;">※未圧縮データを使ってください！</span>', unsafe_allow_html=True)
 col1, col2  = st.columns(2)
 
 # 前ファイル指定
