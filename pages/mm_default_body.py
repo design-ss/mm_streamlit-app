@@ -39,7 +39,7 @@ st.set_page_config(page_title='mm素体ポーズ体書き出し')
 st.title('mm素体ポーズ書き出し')
 
 st.write('**見た目体はこちらのアプリでは書き出しできません。mm bodyを使ってください。** ', unsafe_allow_html=True)
-
+st.write('<span style="color:red;">※未圧縮データを使ってください！</span>', unsafe_allow_html=True)
 
 col1, col2 = st.columns(2)
 
