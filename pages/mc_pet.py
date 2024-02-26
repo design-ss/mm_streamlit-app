@@ -128,7 +128,7 @@ def generate_large_images(export_file):
 st.set_page_config(page_title='mcペット書き出し')
 
 st.title('mcペット書き出し')
-
+st.write('<span style="color:red;">※未圧縮データを使ってください！</span>', unsafe_allow_html=True)
 # 書き出しファイル
 export_files = st.file_uploader("**ペット**", type='png', accept_multiple_files=True, key="export_files")
 
