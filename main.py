@@ -13,7 +13,7 @@ st.markdown(
     '④ボタンを押して書き出し<br>'
     '⑤zipをダウンロード<br>'
     '⑥zipを解凍※1<br>'
-    '⑦Pngyuで圧縮する※2<br>'
+    '⑦PngyuでHighQualityに設定し圧縮する※2<br>'
     '</p>'
      '<p style="font-size: 80%; margin-top: -10px;">'
     '　　※1　Windowsでデフォルトの解凍を使うとエラーが出ます。7-Zipなどの解凍ソフトを使用してください。<br>'
