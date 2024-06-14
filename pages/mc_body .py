@@ -137,14 +137,10 @@ def generate_large_images(file_front, file_center, file_back, head_file):
 
     if file_front:
         image_front = image_front.resize((960, 640))
-        binary_dict["/960x640/" + file_front.name] = image_front
     if file_center:
         image_center = image_center.resize((960, 640))
-        if file_center:
-            binary_dict["/960x640/" + file_center.name] = image_center
     if file_back and file_back.name not in ['素体_男.png', '素体_女.png']:
         image_back = image_back.resize((960, 640))
-        binary_dict["/960x640/" + file_back.name] = image_back
 
     # 統合する
     image = Image.alpha_composite(image_back.convert("RGBA"), image_center.convert("RGBA"))
@@ -284,6 +280,48 @@ with export_button1:
                     # 320 × 320保存
                     c_image = d_image.resize((320, 320))
                     binary_dict["/320x320/" + file_name] = c_image
+                    
+                    ####################################
+                    
+                    #　960 × 640　の保存
+                    
+                    ####################################
+                    # 画像を読み込む
+                    if file_front:
+                        image_front = Image.open(file_front).convert("RGBA")
+                        image_front = image_front.resize((960, 640))
+                    else:
+                        image_front = Image.new("RGBA", (960, 640), (0, 0, 0, 0))
+
+                    if file_center:
+                        image_center = Image.open(file_center).convert("RGBA")
+                        image_center = image_center.resize((960, 640))
+                    else:
+                        image_center = Image.new("RGBA", (960, 640), (0, 0, 0, 0))
+
+                    if file_back:
+                        image_back = Image.open(file_back).convert("RGBA")
+                        image_back = image_back.resize((960, 640))
+                    else:
+                        image_back = Image.new("RGBA", (960, 640), (0, 0, 0, 0))
+                                        
+                    # 頭素体あったら開く
+                    if head_file:  
+                        image_head = Image.open(head_file[0]).convert("RGBA") 
+                        image_center = Image.alpha_composite(image_center.convert("RGBA"), image_head.convert("RGBA"))
+
+                    if file_front:
+                        image_front = image_front.resize((960, 640))
+                        binary_dict["/960x640/" + file_front.name] = image_front
+                    if file_center:
+                        image_center = image_center.resize((960, 640))
+                        if file_center:
+                            binary_dict["/960x640/" + file_center.name] = image_center
+                    if file_back and file_back.name not in ['素体_男.png', '素体_女.png']:
+                        image_back = image_back.resize((960, 640))
+                        binary_dict["/960x640/" + file_back.name] = image_back
+                  
+                    
             time.sleep(3)
         st.markdown(f'<span style="color:red">書き出しが完了しました。ダウンロードボタンが表示されるまでお待ちください。</span>', unsafe_allow_html=True)
         show_zip_download("mc_body.zip", binary_dict)
@@ -367,6 +405,48 @@ with export_selected_button1:
                     # 320 × 320保存
                     c_image = d_image.resize((320, 320))
                     binary_dict["/320x320/" + file_name] = c_image
+                    
+                      ####################################
+                    
+                    #　960 × 640　の保存
+                    
+                    ####################################
+                    # 画像を読み込む
+                    if file_front:
+                        image_front = Image.open(file_front).convert("RGBA")
+                        image_front = image_front.resize((960, 640))
+                    else:
+                        image_front = Image.new("RGBA", (960, 640), (0, 0, 0, 0))
+
+                    if file_center:
+                        image_center = Image.open(file_center).convert("RGBA")
+                        image_center = image_center.resize((960, 640))
+                    else:
+                        image_center = Image.new("RGBA", (960, 640), (0, 0, 0, 0))
+
+                    if file_back:
+                        image_back = Image.open(file_back).convert("RGBA")
+                        image_back = image_back.resize((960, 640))
+                    else:
+                        image_back = Image.new("RGBA", (960, 640), (0, 0, 0, 0))
+                                        
+                    # 頭素体あったら開く
+                    if head_file:  
+                        image_head = Image.open(head_file[0]).convert("RGBA") 
+                        image_center = Image.alpha_composite(image_center.convert("RGBA"), image_head.convert("RGBA"))
+
+                    if file_front:
+                        image_front = image_front.resize((960, 640))
+                        binary_dict["/960x640/" + file_front.name] = image_front
+                    if file_center:
+                        image_center = image_center.resize((960, 640))
+                        if file_center:
+                            binary_dict["/960x640/" + file_center.name] = image_center
+                    if file_back and file_back.name not in ['素体_男.png', '素体_女.png']:
+                        image_back = image_back.resize((960, 640))
+                        binary_dict["/960x640/" + file_back.name] = image_back
+                    
+                    
             time.sleep(3)
         st.markdown(f'<span style="color:red">書き出しが完了しました。ダウンロードボタンが表示されるまでお待ちください。</span>', unsafe_allow_html=True)
         show_zip_download("mc_body2.zip", binary_dict)
