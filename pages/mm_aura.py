@@ -160,7 +160,8 @@ def generate_large_images(export_file_top, export_file_bottom, scale_640, horizo
     pad_height = 640 - height - up
     padding = (pad_width_left, pad_height, pad_width_right, up)
     d_image = ImageOps.expand(image, padding)
-
+    d_image = d_image.resize((640, 640))
+    
     # ファイル名を設定する
     if export_file_top:
         file_name = export_file_top.name
