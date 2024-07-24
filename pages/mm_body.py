@@ -114,7 +114,8 @@ def generate_small_images(file_front, file_center, file_back, playmark_files, ma
 
     return b_image, file_name
 
-def generate_large_images(file_front, file_center, file_back, mask_file, binary_dict):
+# 謎のbinary_dict入ってたので抜いてるけどエラー起きたらまた突っ込むこと。
+def generate_large_images(file_front, file_center, file_back, mask_file):
     # 画像を読み込む
     if file_front:
         image_front = Image.open(file_front).convert("RGBA")
@@ -275,7 +276,7 @@ with export_button1:
                 #　640 × 640、320 ×　320　のリサイズ
 
                 ####################################
-                d_image, file_name = generate_large_images(file_front, file_center, file_back, mask_file, binary_dict)
+                d_image, file_name = generate_large_images(file_front, file_center, file_back, mask_file)
 
                 # 640 x 640 
                 binary_dict["/640x640/" + file_name] = d_image
