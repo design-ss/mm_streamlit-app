@@ -135,6 +135,7 @@ def generate_large_images(export_file_front, export_file_back):
 st.set_page_config(page_title='mcオーラ書き出し')
 st.title('mcオーラ書き出し')
 st.write('<span style="color:red;">※未圧縮データを使ってください！</span>', unsafe_allow_html=True)
+st.write('<span style="color:red;">※壁紙オーラ以外想定してない作りになってますので、当分それ以外はpsdでの書き出しで対応してください。</span>', unsafe_allow_html=True)
 # オーラ前ファイル指定
 export_files_front = st.file_uploader("**オーラ前**", type='png', accept_multiple_files=True, key="export_files_front")
 
