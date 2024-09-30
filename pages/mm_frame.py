@@ -77,22 +77,18 @@ with export_button1:
 
                 ####################################
 
-                # 300 × 300 にリサイズしておく
-                image = image.resize((300, 300))
 
-                # 透明画像を作っておく
+                image = image.resize((300, 300))
                 blank_image = Image.new('RGBA', (640, 640), (0, 0, 0, 0))
 
-                # 元の画像を貼り付け
+                # 元画像
                 left = (blank_image.width - image.width) // 2
                 top = int((blank_image.height - image.height) * 0.8)
                 blank_image.paste(image, (left, top))
                 resized_640 = blank_image
               
-                # 320リサイズ
                 resized_320 = blank_image.resize((320, 320))
 
-                # 統合した画像の保存
                 binary_dict["/frame/icon_frame/320x320/" + ICON.name] = resized_320
                 binary_dict["/frame/icon_frame/640x640/" + ICON.name] = resized_640
                 
@@ -100,7 +96,7 @@ with export_button1:
             for ICON, GUILD in zip(export_files_iconframe, export_files_guildframe):
                 ####################################
 
-                #　50 × 50、100 × 100、224 × 552のリサイズ
+                #　50 × 50、100 × 100
 
                 ####################################
 
@@ -113,7 +109,28 @@ with export_button1:
                 binary_dict["/frame/guild_frame/50x50/" + GUILD.name] = resized_50
                 resized_100 = icon_image.resize((100, 100))
                 binary_dict["/frame/guild_frame/100x100/" + GUILD.name] = resized_100
+                
+                ####################################
 
+                #　640 × 640、320 ×　320　のリサイズ 、224 × 552のリサイズもついでに
+
+                ####################################
+                # ちょっとミスったのでいつか直す
+                icon_image = image
+                image = image.resize((300, 300))
+                blank_image = Image.new('RGBA', (640, 640), (0, 0, 0, 0))
+
+                # 元画像
+                left = (blank_image.width - image.width) // 2
+                top = int((blank_image.height - image.height) * 0.8)
+                blank_image.paste(image, (left, top))
+                resized_640 = blank_image
+              
+                resized_320 = blank_image.resize((320, 320))
+
+                binary_dict["/frame/guild_frame/320x320/" + GUILD.name] = resized_320
+                binary_dict["/frame/guild_frame/640x640/" + GUILD.name] = resized_640
+                
                 # ギルドフレームを保存
                 resized_224 = guild_image.resize((224, 552))
                 binary_dict["/frame/guild_frame/224x552/" + GUILD.name] = resized_224
