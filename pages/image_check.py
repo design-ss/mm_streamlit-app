@@ -31,8 +31,8 @@ def getPreviewImage(image, border_size=1, border_color='red'):
     return img_with_border
 
 st.set_page_config(page_title='mm書き出し後チェック')
-st.title('mm書き出し後チェック')
-st.write('**mm100×100と640×640の位置を確認できます。** </p>', unsafe_allow_html=True)
+st.title('書き出し後チェック')
+st.write('**100×100と640×640の位置、960のフレームの位置を確認できます。** </p>', unsafe_allow_html=True)
 
 files_100 = st.file_uploader("チェックしたい100×100ファイルを選択", type='png', accept_multiple_files=True, key="files_100")
 files_640 = st.file_uploader("チェックしたい640×640ファイルを選択", type='png', accept_multiple_files=True, key="files_640")
