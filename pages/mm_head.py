@@ -170,7 +170,7 @@ def generate_large_images(file_front, file_back, export_files_center, scale_640,
 
 st.set_page_config(page_title='mm頭・髪書き出し')
 
-st.title('mm頭・髪書き出し')
+st.title('mm頭・髪・顔素体付きピアス・ネックレス書き出し')
 st.write('<span style="color:red;">※未圧縮データを使ってください！</span>', unsafe_allow_html=True)
 col1, col2  = st.columns(2)
 
