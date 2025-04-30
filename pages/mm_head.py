@@ -186,7 +186,7 @@ with col2:
 export_files_center = st.file_uploader("「mm_頭素体.png」を選択", type='png', accept_multiple_files=True, key="export_files_center")
 # ファイルが選択されていない場合はメッセージを表示する
 if not export_files_center:
-    st.write('<span style="color:red;">未選択です。「mm_頭素体.png」をアップロードしてください。</span>', unsafe_allow_html=True)
+    st.write('<span style="color:red;">未選択です。「mm_頭素体.png」ピアス・ネックレスの場合は「mm_白頭素体.png」をアップロードしてください。</span>', unsafe_allow_html=True)
 
 # ファイル名を昇順に並び替える　ローカルでは選択順にアップされるが、クラウド上ではなぜかバラバラになるので制御するために昇順に
 export_files_front = sorted(export_files_front, key=lambda x: x.name)
