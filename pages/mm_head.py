@@ -404,3 +404,4 @@ with export_selected_button1:
         st.markdown(f'<span style="color:red">書き出しが完了しました。ダウンロードボタンが表示されるまでお待ちください。</span>', unsafe_allow_html=True)
         show_zip_download("mm_head2.zip", binary_dict)
     st.write('チェックを入れたファイルを書き出します。')
+
