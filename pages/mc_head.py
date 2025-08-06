@@ -202,11 +202,11 @@ col3, col4  = st.columns(2)
 with col3:
     # 白黒頭素体　
     st.write('**mc_白黒頭素体**<span style="color:red; font-size: 80%;">　※必須</span>', unsafe_allow_html=True)
-    st.write('<span style="font-size: 80%;">「mc_白黒頭素体.png」をアップロードしてください。</span>', unsafe_allow_html=True)
+    st.write('<span style="font-size: 80%;">「mc_w_head.png」をアップロードしてください。</span>', unsafe_allow_html=True)
     export_files_center = st.file_uploader("選択", type='png', accept_multiple_files=True, key="export_files_center")
     # ファイルが選択されていない場合はメッセージを表示する
     if not export_files_center:
-        st.write('<span style="color:red;">未選択です。「mc_白黒頭素体.png」をアップロードしてください。</span>', unsafe_allow_html=True)
+        st.write('<span style="color:red;">未選択です。「mc_w_head.png」をアップロードしてください。</span>', unsafe_allow_html=True)
 
 with col4:
     # 属性ファイル　
