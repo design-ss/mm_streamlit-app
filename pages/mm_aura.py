@@ -218,7 +218,7 @@ st.markdown('---')
 
 col5, _, col6 = st.columns([1, 0.1, 1])  # '_'は空のカラム
 with col5:
-    st.write('**男女シルエット** <p style="font-size: 80%;">100×100男女シルエット画像をアップロードしてください。<br>「シルエット_男性.png」「シルエット_女性.png」から名前を変更しないでください。</p>', unsafe_allow_html=True)
+    st.write('**男女シルエット** <p style="font-size: 80%;">100×100男女シルエット画像をアップロードしてください。<br>「silhouette_male.png」「silhouette_female.png」から名前を変更しないでください。</p>', unsafe_allow_html=True)
     # 100×100男女シルエット
     silhouette_files = st.file_uploader("選択", type='png', accept_multiple_files=True, key="silhouette_file")
     silhouette_dict = {silhouette_file.name: silhouette_file for silhouette_file in silhouette_files}
@@ -228,7 +228,7 @@ with col5:
         
 with col6:
     st.write('**再生マーク**<p style="font-size: 80%;">'
-         'モーションアバター書き出しの際は、再生マークをアップロードしてください。<br>'
+         'モーションアバター書き出しの際は、「100x100_playmark.png」をアップロードしてください。<br>'
         '50/100に再生マークを重ねます。'
         '</p>', 
         unsafe_allow_html=True)
@@ -436,4 +436,3 @@ with export_selected_button1:
         st.markdown(f'<span style="color:red">書き出しが完了しました。ダウンロードボタンが表示されるまでお待ちください。</span>', unsafe_allow_html=True)
         show_zip_download("mm_aura2.zip", binary_dict)
     st.write('チェックを入れたファイルを書き出します。')
-
