@@ -57,7 +57,7 @@ default_pose_male = sorted(default_pose_male, key=lambda x: x.name)
 default_pose_female  = sorted(default_pose_female , key=lambda x: x.name)
 
 
-st.write('**素体ファイル<br>** <p style="font-size: 80%;">「素体_男.png」「素体_女.png」から名前を変更しないでください。<br></p>', unsafe_allow_html=True)
+st.write('**素体ファイル<br>** <p style="font-size: 80%;">「base_male.png」「base_female.png」から名前を変更しないでください。<br></p>', unsafe_allow_html=True)
 # 素体
 default_bodys = st.file_uploader("選択", type='png', accept_multiple_files=True, key="default_body")
 default_body_dict = {default_body.name: default_body for default_body in default_bodys}
@@ -109,9 +109,9 @@ with export_button1:
 
                     # 男女画像 
                     if default_pose_file in default_pose_male:
-                        default_body_image = Image.open(default_body_dict["素体_男.png"])
+                        default_body_image = Image.open(default_body_dict["base_male.png"])
                     else:
-                        default_body_image = Image.open(default_body_dict["素体_女.png"])
+                        default_body_image = Image.open(default_body_dict["base_female.png"])
 
                     # 統合
                     final_image = Image.alpha_composite(default_body_image.convert("RGBA"), default_pose_image.convert("RGBA"))
@@ -256,9 +256,9 @@ with st.spinner("画像生成中です..."):
 
                     # 男女画像 
                     if default_pose_file in default_pose_male:
-                        default_body_image = Image.open(default_body_dict["素体_男.png"])
+                        default_body_image = Image.open(default_body_dict["base_male.png"])
                     else:
-                        default_body_image = Image.open(default_body_dict["素体_女.png"])
+                        default_body_image = Image.open(default_body_dict["base_female.png"])
 
                     # 統合
                     final_image = Image.alpha_composite(default_body_image.convert("RGBA"), default_pose_image.convert("RGBA"))
@@ -346,9 +346,9 @@ with export_selected_button1:
 
                     # 男女画像 
                     if default_pose_file in default_pose_male:
-                        default_body_image = Image.open(default_body_dict["素体_男.png"])
+                        default_body_image = Image.open(default_body_dict["base_male.png.png"])
                     else:
-                        default_body_image = Image.open(default_body_dict["素体_女.png"])
+                        default_body_image = Image.open(default_body_dict["base_female.png.png"])
 
                     # 統合
                     final_image = Image.alpha_composite(default_body_image.convert("RGBA"), default_pose_image.convert("RGBA"))
