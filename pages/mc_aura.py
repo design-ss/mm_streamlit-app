@@ -144,7 +144,6 @@ export_files_back = st.file_uploader("**オーラ後ろ**", type='png', accept_m
 
 # 属性ファイル　
 st.write('**属性**<span style="color:red; font-size: 80%;">　※必須</span>', unsafe_allow_html=True)
-st.write('<span style="font-size: 80%;">属性画像はローカルからアップロードお願いします。</span>', unsafe_allow_html=True)
 
 attribution_file = st.file_uploader("選択", type='png', accept_multiple_files=False, key="attribution_file")
 # ファイルが選択されていない場合はメッセージを表示する
