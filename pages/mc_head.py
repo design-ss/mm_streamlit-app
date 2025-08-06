@@ -48,7 +48,7 @@ def generate_small_images(file_front, file_back, file_center, attribution_file,s
     try:
         image_center = Image.open(file_center[0]).convert("RGBA")
     except IndexError:
-        st.error('mc_白黒頭素体.pngファイルをアップしてください。')
+        st.error('mc_w_head.pngファイルをアップしてください。')
 
     attribution = Image.open(attribution_file)
 
