@@ -216,14 +216,13 @@ col4 , col5 = st.columns(2)
 with col4:
     # 属性ファイル
     st.write('**属性**<span style="color:red; font-size: 80%;">　※必須</span>', unsafe_allow_html=True)
-    st.write('<span style="font-size: 80%;">属性画像はローカルからアップロードお願いします。トレロに全属性画像のフォルダを記載してます。</span>', unsafe_allow_html=True)
     attribution_file = st.file_uploader("選択", type='png', accept_multiple_files=False, key="attribution_file")
     # ファイルが選択されていない場合はメッセージを表示する
     if not attribution_file:
         st.write('<span style="color:red;">未選択です。属性画像をアップロードしてください。</span>', unsafe_allow_html=True)
 
 with col5:
-    st.write('**オマケ：頭（なくても書き出しできます）**<p style="font-size: 80%;">頭素体を付け忘れた時に追加できます。「mc_頭素体.png」をアップロードしてください。<br></p>', unsafe_allow_html=True)
+    st.write('**オマケ：頭（なくても書き出しできます）**<p style="font-size: 80%;">頭素体を付け忘れた時に追加できます。「mc_head.png」をアップロードしてください。<br></p>', unsafe_allow_html=True)
     # 頭素体
     head_file= st.file_uploader("選択", type='png', accept_multiple_files=True, key="head_file")
 
