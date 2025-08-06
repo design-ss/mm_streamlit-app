@@ -186,7 +186,7 @@ with col2:
 export_files_center = st.file_uploader("素体画像を選択", type='png', accept_multiple_files=True, key="export_files_center")
 # ファイルが選択されていない場合はメッセージを表示する
 if not export_files_center:
-    st.write('<span style="color:red;">未選択です。「mm_頭素体.png」ピアス・ネックレスの場合は「mm_白頭素体.png」をアップロードしてください。</span>', unsafe_allow_html=True)
+    st.write('<span style="color:red;">未選択です。「mm_head.png」ピアス・ネックレスの場合は「mm_w_head.png」をアップロードしてください。</span>', unsafe_allow_html=True)
 
 # ファイル名を昇順に並び替える　ローカルでは選択順にアップされるが、クラウド上ではなぜかバラバラになるので制御するために昇順に
 export_files_front = sorted(export_files_front, key=lambda x: x.name)
@@ -194,7 +194,7 @@ export_files_center = sorted(export_files_center, key=lambda x: x.name)
 export_files_back = sorted(export_files_back, key=lambda x: x.name)
 
 st.write('**再生マーク**<p style="font-size: 80%;">'
-         'モーションアバター書き出しの際は、再生マークをアップロードしてください。<br>'
+         'モーションアバター書き出しの際は、「100x100_playmark.png」をアップロードしてください。<br>'
         '50/100に再生マークを重ねます。'
         '</p>', 
         unsafe_allow_html=True)
@@ -404,4 +404,3 @@ with export_selected_button1:
         st.markdown(f'<span style="color:red">書き出しが完了しました。ダウンロードボタンが表示されるまでお待ちください。</span>', unsafe_allow_html=True)
         show_zip_download("mm_head2.zip", binary_dict)
     st.write('チェックを入れたファイルを書き出します。')
-
