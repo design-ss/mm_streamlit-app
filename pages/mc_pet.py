@@ -128,6 +128,7 @@ def generate_large_images(export_file):
 st.set_page_config(page_title='mcペット書き出し')
 
 st.title('mcペット書き出し')
+
 st.write('<span style="color:red;">※未圧縮データを使ってください！</span>', unsafe_allow_html=True)
 # 書き出しファイル
 export_files = st.file_uploader("**ペット**", type='png', accept_multiple_files=True, key="export_files")
@@ -137,7 +138,6 @@ export_files = sorted(export_files, key=lambda x: x.name)
 
 # 属性ファイル　
 st.write('**属性**<span style="color:red; font-size: 80%;">　※必須</span>', unsafe_allow_html=True)
-st.write('<span style="font-size: 80%;">属性画像はローカルからアップロードお願いします。トレロに全属性画像のフォルダを記載してます。</span>', unsafe_allow_html=True)
 # 属性ファイル
 attribution_file = st.file_uploader("選択", type='png', accept_multiple_files=False, key="attribution_file")
 # ファイルが選択されていない場合はメッセージを表示する
