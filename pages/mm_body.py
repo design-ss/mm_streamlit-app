@@ -219,13 +219,13 @@ export_files_back = sorted(export_files_back, key=lambda x: x.name)
 col4 , col5 = st.columns(2)
 
 with col4:
-    st.write('**オマケ：顔輪郭マスク用<br>（なくても書き出しできます）** <p style="font-size: 80%;">「体_中」を首まで描いたときに「マスク用_顔シルエット.png」をアップロードして使用してください。<br>顔の輪郭部分を消すことができます。<br></p>', unsafe_allow_html=True)
+    st.write('**オマケ：顔輪郭マスク用<br>（なくても書き出しできます）** <p style="font-size: 80%;">「体_中」を首まで描いたときに「mask_face_silhouette.png」をアップロードして使用してください。<br>顔の輪郭部分を消すことができます。<br></p>', unsafe_allow_html=True)
     # マスク用
     mask_file = st.file_uploader("選択", type='png', accept_multiple_files=True, key="mask_file")
 
 with col5:
     st.write('**再生マーク**<p style="font-size: 80%;">'
-         'モーションアバター書き出しの際は、再生マークをアップロードしてください。<br>'
+         'モーションアバター書き出しの際は、「100x100_playmark.png」をアップロードしてください。<br>'
         '50/100に再生マークを重ねます。'
         '</p>', 
         unsafe_allow_html=True)
