@@ -40,7 +40,7 @@ def show_zip_download(file_name, target_dict):
 
 # --- UI設定 ---
 st.set_page_config(page_title='消し残しチェック (高速版)')
-st.title('消し残しチェック 🚀')
+st.title('消し残しチェック')
 st.write('ピクセルループを廃止し、高速な画像フィルタでゴミを可視化します。')
 
 check_files = st.file_uploader("チェックしたいファイルを選択", type='png', accept_multiple_files=True)
@@ -72,4 +72,5 @@ if check_files:
         if st.button('選択されたファイルをダウンロード'):
             binary_dict = {f"{name.rsplit('.', 1)[0]}_消し残し.png": img for name, img in selected_files}
             show_zip_download("消し残し_checked.zip", binary_dict)
+
 
