@@ -3,20 +3,18 @@ from PIL import Image, ImageOps, ImageFilter
 import io
 import zipfile
 
-# --- 高速化ポイント1: キャッシュを使用して再計算を防ぐ ---
+
 @st.cache_data(show_spinner="画像を処理中...")
 def process_image_fast(image_bytes, border_size, border_color='red'):
     # bytesから画像を開く
     image = Image.open(io.BytesIO(image_bytes)).convert("RGBA")
     
     if border_size == 0:
-        return image
-
-    # --- 高速化ポイント2: ループを回さずフィルタでフチを作る ---
+        retu
     # アルファチャンネル（透明度）だけを取り出す
     alpha = image.split()[3]
     
-    # MaxFilterでアルファ値を膨張させる（これがフチになる）
+    # MaxFilterでアルファ値を膨張させる
     # size=3で1px、5で2px... のように広がります
     edge_alpha = alpha.filter(ImageFilter.MaxFilter(border_size * 2 + 1))
     
@@ -74,3 +72,4 @@ if check_files:
         if st.button('選択されたファイルをダウンロード'):
             binary_dict = {f"{name.rsplit('.', 1)[0]}_消し残し.png": img for name, img in selected_files}
             show_zip_download("消し残し_checked.zip", binary_dict)
+
